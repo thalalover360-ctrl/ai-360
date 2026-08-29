@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 360 - Next-Gen Neural Hub</title>
+    <title>AI 360 - Neural Ecosystem Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -18,7 +18,7 @@
         .dev-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .dev-modal-box { background: #0c101d; border: 1px solid #00f2fe; border-radius: 16px; padding: 20px; width: 100%; max-width: 420px; box-shadow: 0 0 35px rgba(0,242,254,0.25); }
         .dev-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-family: 'Orbitron', sans-serif; color: #00f2fe; font-size: 0.95rem; }
-        .dev-input { width: 100%; background: #05070e; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 10px 12px; color: #00f2fe; font-size: 0.8rem; margin-top: 6px; margin-bottom: 14px; outline: none; transition: 0.2s; }
+        .dev-input { width: 100%; background: #05070e; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 10px 12px; color: #00f2fe; font-size: 0.8rem; margin-top: 6px; margin-bottom: 14px; outline: none; }
         .dev-input:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0,242,254,0.3); }
         .save-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; width: 100%; color: #05070e; font-size: 0.85rem; }
 
@@ -64,7 +64,7 @@
 <body>
     <div class="glow-bg"></div>
     <header>
-        <div class="dev-gear" onclick="toggleModal()" title="AI Core Settings">⚙️ API Settings</div>
+        <div class="dev-gear" onclick="toggleModal()" title="Core Config">⚙️ Neural Config</div>
         <h1 class="brand-title">AI 360</h1>
         <p class="tagline">Next-Gen Neural Engine</p>
     </header>
@@ -72,11 +72,11 @@
     <div class="dev-modal" id="devModal">
         <div class="dev-modal-box">
             <div class="dev-modal-header">
-                <span>⚡ AI 360 Neural Config</span>
+                <span>⚡ Neural Access Config</span>
                 <span style="cursor:pointer;" onclick="toggleModal()">✕</span>
             </div>
-            <label style="font-size:0.75rem; color:#94a3b8; font-weight:600;">💎 Gemini High-Speed API Key:</label>
-            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste your API key here">
+            <label style="font-size:0.75rem; color:#94a3b8; font-weight:600;">🔑 Access Key:</label>
+            <input type="password" id="coreKey" class="dev-input" placeholder="Paste access token here">
             <button class="save-btn" onclick="saveSettings()">Save & Activate</button>
         </div>
     </div>
@@ -95,7 +95,7 @@
             <div class="card-icon">🎙️</div>
             <div class="card-info">
                 <h3>Studio Songwriter & Vocalist 🎵</h3>
-                <p>Emotional Bollywood, Hip-Hop & Drill with audio recitation</p>
+                <p>Catchy Bollywood & Rap lyrics with natural voice recitation</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
@@ -103,7 +103,7 @@
             <div class="card-icon">🗣️</div>
             <div class="card-info">
                 <h3>Text to Voice Studio</h3>
-                <p>Instant clear vocal voice synthesizer</p>
+                <p>Instant audio vocal synthesizer</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('imagestudio')">
@@ -119,7 +119,7 @@
             <div class="card-icon">🎮</div>
             <div class="card-info">
                 <h3>Pro Esports Mentor AI</h3>
-                <p>High-tier clutch mechanics, rotation & game sense</p>
+                <p>Clutch decision trees, recoil guides & positioning</p>
             </div>
         </div>
     </div>
@@ -128,7 +128,7 @@
         <div class="panel-header">
             <h2 class="panel-title" id="panelTitle">Module Chat</h2>
             <div>
-                <span style="cursor:pointer; font-size:1.1rem; margin-right:12px;" onclick="toggleModal()" title="Settings">⚙️</span>
+                <span style="cursor:pointer; font-size:1.1rem; margin-right:12px;" onclick="toggleModal()" title="Config">⚙️</span>
                 <button class="close-btn" onclick="closeModule()">✕</button>
             </div>
         </div>
@@ -138,7 +138,7 @@
             <button class="style-btn" onclick="setArtStyle('logo', this)">🔮 3D Metallic Emblem</button>
         </div>
         <div class="chat-box" id="chatBox">
-            <div class="chat-msg msg-ai">⚡ AI 360 Core Online. Type your prompt or attach an image!</div>
+            <div class="chat-msg msg-ai">⚡ Neural Core Online. Type your prompt or attach an image!</div>
         </div>
         <div class="img-preview-bar" id="imgPreviewBar">
             <img id="previewImg" class="preview-thumb">
@@ -154,12 +154,13 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-        <script>
+
+    <script>
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'realism';
 
-        const geminiEl = document.getElementById('geminiKey');
-        geminiEl.value = localStorage.getItem('ai360_gemini') || '';
+        const coreEl = document.getElementById('coreKey');
+        coreEl.value = localStorage.getItem('ai360_core_key') || '';
 
         function toggleModal() {
             const m = document.getElementById('devModal');
@@ -167,17 +168,17 @@
         }
 
         function saveSettings() {
-            localStorage.setItem('ai360_gemini', geminiEl.value.trim());
+            localStorage.setItem('ai360_core_key', coreEl.value.trim());
             toggleModal();
-            alert("✅ API Settings Saved!");
+            alert("✅ Access Key Saved!");
         }
 
         const systemPrompts = {
-            study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and clearly box or highlight final answers.",
-            music: "You are an award-winning Indian Lyricist and Music Producer. Write high-energy, catchy, emotionally resonant lyrics (Hinglish/Hindi/English). Structure the output cleanly with [Hook], [Verse], and [Chorus] with exceptional rhythm, rhyme, and punchlines. Deliver pure artistic lyrics without conversational filler.",
+            study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and clearly highlight final answers.",
+            music: "You are an award-winning Indian Lyricist and Music Producer. Write catchy, emotional, rhyming punchlines in Roman Hinglish. Structure cleanly with [Hook] and [Verse]. Deliver pure musical vibes without conversational filler.",
             voice: "Text to voice engine.",
             imagestudio: "AI Image and Art Studio generator.",
-            gaming: "You are a professional Tier-1 esports analyst and coach. Give precise, pro-level game sense breakdowns, clutch decision trees, sensitivity guides, weapon attachments, and optimal positioning strategies."
+            gaming: "You are a professional Tier-1 esports coach. Give precise clutch decision trees, sensitivity guides, weapon attachments, and optimal positioning strategies."
         };
 
         function openModule(mode) {
@@ -190,7 +191,7 @@
             const styleSelector = document.getElementById('styleSelector');
             styleSelector.style.display = (mode === 'imagestudio') ? 'flex' : 'none';
 
-            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Enter prompt or upload an image to begin!</div>`;
+            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Type below or upload a photo!</div>`;
             clearImage();
         }
 
@@ -284,27 +285,34 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // Auto-fallback Gemini connection engine
-        async function callGemini(geminiKey, text, isImage = false) {
-            const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
-            let lastError = null;
+        // Multi-Tier Fallback Engine (3.5 Flash -> 3.0 Flash -> 2.5 Flash -> 2.0 Flash)
+        async function callNeuralCore(apiKey, text, isImage = false) {
+            const candidateModels = [
+                "gemini-3.5-flash",
+                "gemini-3.0-flash",
+                "gemini-2.5-flash",
+                "gemini-2.0-flash",
+                "gemini-2.0-flash-exp"
+            ];
 
             let parts = [];
             if (isImage && currentImageBase64) {
                 parts.push({
-                    inlineData: {
-                        mimeType: "image/jpeg",
+                    inline_data: {
+                        mime_type: "image/jpeg",
                         data: currentImageBase64
                     }
                 });
             }
             parts.push({
-                text: `${systemPrompts[currentMode] || ""}\n\nUser Query: ${text || "Process and analyze step-by-step."}`
+                text: `${systemPrompts[currentMode] || ""}\n\nTask: ${text || "Process and analyze step-by-step."}`
             });
 
-            for (const model of models) {
+            let lastError = "";
+
+            for (const model of candidateModels) {
                 try {
-                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
                     const res = await fetch(endpoint, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -322,18 +330,19 @@
                     lastError = e.message;
                 }
             }
-            throw new Error(lastError || "Could not reach Gemini neural engine.");
+
+            throw new Error(lastError || "Neural core execution failed. Please verify your access key.");
         }
 
         async function sendMessage() {
             const inputEl = document.getElementById('userInput');
             const text = inputEl.value.trim();
-            const geminiKey = geminiEl.value.trim();
+            const apiKey = coreEl.value.trim();
             
             if (!text && !currentImageBase64) return;
 
             let userDisplay = text;
-            if (currentImageBase64) userDisplay = `📷 [Image Attached]\n` + (text || "Solve and analyze this problem.");
+            if (currentImageBase64) userDisplay = `📷 [Image Attached]\n` + (text || "Analyze this image.");
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
@@ -353,13 +362,13 @@
 
             // 2. High-Definition Art Studio Mode
             if (currentMode === 'imagestudio') {
-                const loadingMsg = appendMessage('ai', "🎨 Generating Studio Masterpiece...");
+                const loadingMsg = appendMessage('ai', "🎨 Rendering Ultra-HD Artwork...");
                 const seed = Math.floor(Math.random() * 9999999);
-                let promptText = text || "Hyper-futuristic neon metropolis cyber architecture";
+                let promptText = text || "Futuristic digital art";
 
-                if (selectedArtStyle === 'realism') promptText += ", 8k resolution, octane render, photorealistic cinematic lighting, ultra-intricate details, raytracing";
-                else if (selectedArtStyle === 'ghibli') promptText += ", Studio Ghibli cinematic animation aesthetic, Hayao Miyazaki artwork, soft vibrant watercolor, masterwork 8k";
-                else if (selectedArtStyle === 'logo') promptText += ", Minimalist futuristic 3D emblem vector logo, glowing metallic finish, dark studio backdrop, 8k";
+                if (selectedArtStyle === 'realism') promptText += ", 8k resolution, hyper-realistic 3d octane render, cinematic lighting, raytracing";
+                else if (selectedArtStyle === 'ghibli') promptText += ", Studio Ghibli anime aesthetic, Hayao Miyazaki artwork, vibrant watercolor, 8k";
+                else if (selectedArtStyle === 'logo') promptText += ", 3D futuristic minimalist metallic emblem logo, dark background, 8k";
 
                 const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
 
@@ -382,9 +391,9 @@
                 return;
             }
 
-            // 3. Gemini High-Performance Solver & Lyricist
-            if (!geminiKey) {
-                appendMessage('ai', "❌ API Key Missing! Click ⚙️ API Settings at the top and paste your Gemini Key.");
+            // 3. Neural Core Processing (Study, Music, Gaming)
+            if (!apiKey) {
+                appendMessage('ai', "❌ Access Key Missing! Click ⚙️ Neural Config at the top and paste your key.");
                 toggleModal();
                 clearImage();
                 return;
@@ -393,12 +402,12 @@
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 Core Processing...");
 
             try {
-                const responseText = await callGemini(geminiKey, text, !!currentImageBase64);
+                const responseText = await callNeuralCore(apiKey, text, !!currentImageBase64);
 
                 if (currentMode === 'music') {
                     window.lastSong = responseText;
                     aiMsgBox.innerHTML = `
-                        <div>🎵 <b>Generated Track:</b><br><br>${responseText.replace(/\n/g, '<br>')}</div>
+                        <div>🎵 <b>Generated Lyrics:</b><br><br>${responseText.replace(/\n/g, '<br>')}</div>
                         <div class="voice-card">
                             <button class="v-btn" onclick="playSpeech(window.lastSong)">🎙️ Recite Vocals</button>
                             <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy Lyrics</button>
@@ -418,3 +427,5 @@
     </script>
 </body>
 </html>
+
+
