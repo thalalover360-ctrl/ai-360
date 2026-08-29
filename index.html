@@ -91,7 +91,7 @@
             <div class="card-icon">⚡</div>
             <div class="card-info">
                 <h3>Study AI + Photo Solver 📸</h3>
-                <p>Instant derivations, step-by-step doubt solver</p>
+                <p>Instant derivations & doubt solver</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('music')">
@@ -203,7 +203,6 @@
             document.getElementById('grid').style.display = 'flex';
         }
 
-        // --- Fast Image Compressor to prevent Network Hang ---
         function handleImage(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -270,23 +269,30 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
         }
 
+        // --- Robust Multi-Endpoint Gemini Vision Caller ---
         async function callGemini(geminiKey, text) {
             const parts = [];
             if (currentImageBase64) {
                 parts.push({
-                    inline_data: {
-                        mime_type: "image/jpeg",
+                    inlineData: {
+                        mimeType: "image/jpeg",
                         data: currentImageBase64
                     }
                 });
             }
             parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Solve step-by-step.'}` });
             
-            const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+            const models = [
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
+                "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent"
+            ];
+
             let lastErr = "";
-            for (let m of models) {
+            for (let url of models) {
                 try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${geminiKey}`, {
+                    const response = await fetch(`${url}?key=${geminiKey}`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ contents: [{ parts }] })
@@ -300,7 +306,7 @@
                     lastErr = e.message;
                 }
             }
-            throw new Error(lastErr || "Gemini Vision Error. Check Key.");
+            throw new Error(lastErr || "Check your Gemini API Key in Settings.");
         }
 
         async function getAvailableGroqModels(groqKey) {
@@ -384,7 +390,6 @@
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is solving...");
             let responseText = "", success = false, errorMsg = "";
 
-            // Photo upload ALWAYS goes to Gemini Vision
             if (currentImageBase64 || prefEngine === 'gemini') {
                 if (geminiKey) {
                     try { 
@@ -398,7 +403,6 @@
                 }
             }
             
-            // Text-only fallback to Groq if not using image
             if (!currentImageBase64 && !success && groqKey) {
                 try {
                     responseText = await callGroq(groqKey, text);
