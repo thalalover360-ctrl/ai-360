@@ -10,18 +10,9 @@
         body { background: #060812; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; }
         .glow-bg { position: fixed; top: 15%; left: 50%; transform: translate(-50%, -50%); width: 380px; height: 380px; background: radial-gradient(circle, rgba(0,242,254,0.18) 0%, rgba(79,172,254,0) 75%); z-index: 0; pointer-events: none; }
         
-        header { text-align: center; margin: 15px 0 22px; z-index: 1; position: relative; width: 100%; max-width: 520px; }
+        header { text-align: center; margin: 20px 0 24px; z-index: 1; position: relative; width: 100%; max-width: 520px; }
         .brand-title { font-family: 'Orbitron', sans-serif; font-size: 2.3rem; font-weight: 900; letter-spacing: 1px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #8a2be2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .tagline { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 3px; margin-top: 3px; font-weight: 600; }
-        .dev-gear { position: absolute; top: 0; right: 0; font-size: 0.82rem; background: rgba(79,172,254,0.12); border: 1px solid rgba(0,242,254,0.3); border-radius: 8px; color: #00f2fe; cursor: pointer; padding: 6px 12px; display: flex; align-items: center; gap: 5px; font-weight: 600; }
-
-        .dev-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
-        .dev-modal-box { background: #0c101d; border: 1px solid #00f2fe; border-radius: 16px; padding: 20px; width: 100%; max-width: 420px; box-shadow: 0 0 35px rgba(0,242,254,0.25); }
-        .dev-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-family: 'Orbitron', sans-serif; color: #00f2fe; font-size: 0.95rem; }
-        .dev-label { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 8px; display: block; }
-        .dev-input { width: 100%; background: #05070e; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 10px 12px; color: #00f2fe; font-size: 0.8rem; margin-top: 4px; margin-bottom: 8px; outline: none; transition: 0.2s; }
-        .dev-input:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0,242,254,0.3); }
-        .save-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; width: 100%; color: #05070e; font-size: 0.85rem; margin-top: 10px; }
 
         .features-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 520px; z-index: 1; margin-bottom: 25px; }
         .feature-card { background: rgba(15,20,35,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: 0.2s; backdrop-filter: blur(6px); }
@@ -66,22 +57,9 @@
 <body>
     <div class="glow-bg"></div>
     <header>
-        <div class="dev-gear" onclick="toggleModal()" title="Core Config">⚙️ Neural Key</div>
         <h1 class="brand-title">AI 360</h1>
         <p class="tagline">Next-Gen Multi-Modal Neural Hub</p>
     </header>
-
-    <div class="dev-modal" id="devModal">
-        <div class="dev-modal-box">
-            <div class="dev-modal-header">
-                <span>⚡ Neural Access Key</span>
-                <span style="cursor:pointer;" onclick="toggleModal()">✕</span>
-            </div>
-            <label class="dev-label">🔑 Neural Core API Key:</label>
-            <input type="password" id="coreKey" class="dev-input" placeholder="Paste your API key here">
-            <button class="save-btn" onclick="saveSettings()">Save & Activate</button>
-        </div>
-    </div>
 
     <div class="features-grid" id="grid">
         <div class="feature-card" onclick="openModule('study')">
@@ -110,7 +88,7 @@
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
             <div class="card-num">04</div>
-            <div class="card-info">🎮</div>
+            <div class="card-icon">🎮</div>
             <div class="card-info">
                 <h3>Pro Esports Mentor AI</h3>
                 <p>Tactics, weapon mechanics & clutch decision trees</p>
@@ -121,10 +99,7 @@
     <div class="action-panel" id="actionPanel">
         <div class="panel-header">
             <h2 class="panel-title" id="panelTitle">Module Chat</h2>
-            <div>
-                <span style="cursor:pointer; font-size:1.1rem; margin-right:12px;" onclick="toggleModal()" title="Config">⚙️</span>
-                <button class="close-btn" onclick="closeModule()">✕</button>
-            </div>
+            <button class="close-btn" onclick="closeModule()">✕</button>
         </div>
         <div class="style-selector" id="styleSelector">
             <button class="style-btn active" onclick="setArtStyle('ghibli', this)">🌸 Studio Ghibli 2D</button>
@@ -132,7 +107,7 @@
             <button class="style-btn" onclick="setArtStyle('logo', this)">🔮 3D Metallic Emblem</button>
         </div>
         <div class="chat-box" id="chatBox">
-            <div class="chat-msg msg-ai">⚡ Neural Core Ready. Enter a prompt or attach a photo!</div>
+            <div class="chat-msg msg-ai">⚡ Neural Core Online. Enter a prompt or attach a photo!</div>
         </div>
         <div class="img-preview-bar" id="imgPreviewBar">
             <img id="previewImg" class="preview-thumb">
@@ -149,26 +124,16 @@
         </div>
     </div>
         <script>
+        // 🔒 PERMANENTLY LOCKED & EMBEDDED API KEY (Paste your key inside the quotes)
+        const LOCKED_KEY_PLAIN = "YOUR_GEMINI_API_KEY_HERE";
+        const CORE_API_KEY = LOCKED_KEY_PLAIN.trim();
+
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'ghibli';
 
-        const coreEl = document.getElementById('coreKey');
-        coreEl.value = localStorage.getItem('ai360_core_key') || '';
-
-        function toggleModal() {
-            const m = document.getElementById('devModal');
-            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        function saveSettings() {
-            localStorage.setItem('ai360_core_key', coreEl.value.trim());
-            toggleModal();
-            alert("✅ Neural Core Key Saved!");
-        }
-
         const systemPrompts = {
             study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and highlight final answers.",
-            music: "You are an award-winning Bollywood & Hip-Hop Lyricist. Write high-energy, catchy, poetic rhyming lyrics in Roman Hinglish. Use strict AABB rhyming punchlines with clear hooks and verses. Output pure lyrics line-by-line without conversational meta text.",
+            music: "You are an award-winning Indian Bollywood & Hip-Hop Male Lyricist. Write original, energetic, catchy rhyming verses and hooks in Roman Hinglish. Structure with [Hook], [Verse 1], and [Drop] using tight end-rhymes (AABB or ABAB scheme).",
             imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are a professional Tier-1 esports coach. Give precise clutch decision trees, sensitivity guides, weapon attachments, and optimal positioning strategies."
         };
@@ -183,7 +148,7 @@
             const styleSelector = document.getElementById('styleSelector');
             styleSelector.style.display = (mode === 'imagestudio') ? 'flex' : 'none';
 
-            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Enter a prompt or upload an image!</div>`;
+            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Type below or attach a photo!</div>`;
             clearImage();
         }
 
@@ -243,7 +208,7 @@
             return msg;
         }
 
-        // Melodic Vocal Engine (No punctuation reading, singing intonation)
+        // 🎙️ Deep Male Vocal Synthesizer (No Female Voices, No Punctuation Pronunciation)
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -262,18 +227,25 @@
             if (!cleanTxt) return;
 
             const u = new SpeechSynthesisUtterance(cleanTxt);
-            if (currentMode === 'music') {
-                u.rate = 1.02;
-                u.pitch = 1.18;
-            } else {
-                u.rate = 0.95;
-                u.pitch = 1.0;
-            }
             u.lang = 'hi-IN';
 
+            // Male voice settings: lower pitch and firm pace
+            if (currentMode === 'music') {
+                u.pitch = 0.82; 
+                u.rate = 0.98;
+            } else {
+                u.pitch = 0.88;
+                u.rate = 0.95;
+            }
+
             const voices = window.speechSynthesis.getVoices();
-            const indVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('IN') || v.name.includes('India'));
-            if (indVoice) u.voice = indVoice;
+            // Filter strictly for male / neutral hindi voices
+            const maleVoice = voices.find(v => 
+                (v.lang.includes('hi') || v.lang.includes('IN')) && 
+                (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('ravi') || v.name.toLowerCase().includes('madhav') || !v.name.toLowerCase().includes('female'))
+            );
+
+            if (maleVoice) u.voice = maleVoice;
 
             window.speechSynthesis.speak(u);
         }
@@ -286,8 +258,8 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // Primary Multimodal Fallback Chain (2.0 to 3.5 Models)
-        async function callNeuralCore(apiKey, text, isImage = false) {
+        // Multi-Model Neural Execution Chain
+        async function callNeuralCore(text, isImage = false) {
             const candidateModels = [
                 "gemini-3.5-flash",
                 "gemini-3.0-flash",
@@ -313,7 +285,7 @@
 
             for (const model of candidateModels) {
                 try {
-                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${CORE_API_KEY}`;
                     const res = await fetch(endpoint, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -338,7 +310,6 @@
         async function sendMessage() {
             const inputEl = document.getElementById('userInput');
             const text = inputEl.value.trim();
-            const apiKey = coreEl.value.trim();
             
             if (!text && !currentImageBase64) return;
 
@@ -347,29 +318,27 @@
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // 1. Precise Vision-to-Art Pipeline (Captures Exact Facial Hair, Pose & Colors)
+            // 1. Precise Vision-to-Art Pipeline (Beard, Mustache, Hair, Pose & Colors)
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "🎨 Scanning your facial features & rendering Studio Art...");
                 const seed = Math.floor(Math.random() * 9999999);
                 let visualDescription = text;
 
-                if (currentImageBase64 && apiKey) {
+                if (currentImageBase64 && CORE_API_KEY) {
                     try {
                         visualDescription = await callNeuralCore(
-                            apiKey, 
                             "Analyze this photo in extreme detail. Describe the person's exact physical features (South Asian/Indian male, specific facial hair like beard and mustache, short dark hair, skin tone), exact clothing colors (light pink shirt, blue jeans, grey sneakers), and exact pose (sitting on a brown textured sofa). Keep it strictly descriptive in 30 words.", 
                             true
                         );
                     } catch (e) {
-                        visualDescription = text || "An Indian young man with stylish beard and mustache";
+                        visualDescription = text || "An Indian young man with stylish beard and mustache sitting on sofa";
                     }
                 }
 
                 let finalPrompt = "";
-                let base = visualDescription || "An Indian male character with beard and mustache";
+                let base = visualDescription || "An Indian young man with stylish beard and mustache";
 
                 if (selectedArtStyle === 'ghibli') {
-                    // Strict 2D Hand-Drawn Anime Cel Style (No 3D / No CGI)
                     finalPrompt = `Authentic 2D Studio Ghibli anime style illustration of ${base}, directed by Hayao Miyazaki, classic 1990s cel-shaded hand-drawn anime character, flat colors, vibrant watercolor painted background, Miyazaki aesthetic, NO 3D, NO CGI, masterpiece 8k`;
                 } else if (selectedArtStyle === 'realism') {
                     finalPrompt = `Hyperrealistic 8k octane 3D render of ${base}, cinematic studio lighting, detailed photorealistic textures, raytracing`;
@@ -399,9 +368,8 @@
             }
 
             // 2. Neural Core (Study, Music, Gaming)
-            if (!apiKey) {
-                appendMessage('ai', "❌ API Key Missing! Click ⚙️ Neural Key at the top and paste your key.");
-                toggleModal();
+            if (!CORE_API_KEY || CORE_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
+                appendMessage('ai', "❌ Embedded Key Missing! Please replace YOUR_GEMINI_API_KEY_HERE with your key in the script.");
                 clearImage();
                 return;
             }
@@ -409,7 +377,7 @@
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 Core Processing...");
 
             try {
-                const responseText = await callNeuralCore(apiKey, text, !!currentImageBase64);
+                const responseText = await callNeuralCore(text, !!currentImageBase64);
 
                 if (currentMode === 'music') {
                     window.lastSong = responseText;
@@ -418,7 +386,7 @@
                             <div style="color:#00f2fe; font-weight:800; margin-bottom:8px;">🎵 Studio Track & Rhyming Hooks:</div>
                             <div style="font-size:0.84rem; line-height:1.6;">${responseText.replace(/\n/g, '<br>')}</div>
                             <div class="song-actions">
-                                <button class="v-btn" onclick="playSpeech(window.lastSong)">🎙️ Sing Vocals</button>
+                                <button class="v-btn" onclick="playSpeech(window.lastSong)">🎙️ Sing Vocals (Male)</button>
                                 <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy Lyrics</button>
                                 <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️</button>
                             </div>
