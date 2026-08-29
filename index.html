@@ -40,11 +40,10 @@
         .msg-ai { align-self: flex-start; background: #182035; color: #d0f4fc; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #00f2fe; }
 
-        /* Fixed Audio Box */
-        .audio-box { background: rgba(0,242,254,0.12); border: 1px solid #00f2fe; border-radius: 10px; padding: 10px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .audio-btn-row { display: flex; gap: 8px; }
-        .audio-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 8px 12px; font-weight: bold; color: #000; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .stop-btn { flex: 0.5; background: #ff5252; color: #fff; }
+        .studio-player { background: linear-gradient(135deg, rgba(0,242,254,0.1), rgba(155,81,224,0.15)); border: 1px solid #00f2fe; border-radius: 12px; padding: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .studio-btn-row { display: flex; gap: 8px; }
+        .studio-play-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 10px; font-weight: bold; color: #000; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .studio-stop-btn { flex: 0.4; background: #ff5252; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         .img-preview-bar { display: none; align-items: center; gap: 8px; background: #121829; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.75rem; color: #00f2fe; }
         .preview-thumb { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; }
@@ -99,8 +98,8 @@
             <div class="card-num">02</div>
             <div class="card-icon">🎵</div>
             <div class="card-info">
-                <h3>Music Creator AI (Compose & Sing 🎙️)</h3>
-                <p>Generate tracks, chords, tempo, beats & lyrics</p>
+                <h3>Music Studio & Vocal AI 🎙️</h3>
+                <p>Generate tracks, chords, tempo, beats & sing lyrics</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
@@ -155,8 +154,9 @@
         </div>
     </div>
         <script>
-        let currentMode = "", currentImageBase64 = null, chatHistory = [], audioCtx = null, beatInterval = null;
+        let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let cachedGroqModels = null;
+        let bgAudioTrack = new Audio();
         
         const groqEl = document.getElementById('groqKey');
         const geminiEl = document.getElementById('geminiKey');
@@ -182,7 +182,7 @@
 
         const systemPrompts = {
             study: "You are an elite professor and interactive tutor. Provide concise step-by-step mathematical & conceptual solutions, explain formulas clearly, and solve doubts from images accurately.",
-            music: "You are a world-class music composer. First write Key, BPM, and Chords. Then write clean musical LYRICS with Verse, Chorus, Hook clearly separated.",
+            music: "You are a top Bollywood & Hip-Hop Music Producer. Write STRICTLY in Roman Hinglish (English letters) or clean Devanagari Hindi. NEVER write in Arabic or Urdu script! Provide:\n1. Track Vibe (Key, BPM, Beat Style)\n2. [Verse 1], [Chorus / Hook], [Verse 2], [Outro] with rhyming and rhythm.",
             voice: "Text to voice engine.",
             image3d: "Image render generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
@@ -232,60 +232,37 @@
             return msg;
         }
 
-        // --- Musical Synthesizer Engine ---
-        function playTone(freq, type, duration, gainVol) {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(gainVol, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + duration);
-            } catch (e) {}
-        }
-
-        const melodyNotes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; // C Major pentatonic
+        // --- Real Studio Beat Stream + Flow Engine ---
         function startSinging(rawLyrics) {
             stopMusic();
-            
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
 
-            // 1. Start Synth Beat + Melody Loop
-            let step = 0;
-            beatInterval = setInterval(() => {
-                // Beat
-                if (step % 2 === 0) playTone(120, 'sine', 0.25, 0.4); // Kick
-                else playTone(300, 'triangle', 0.15, 0.25); // Snare
-                
-                // Melody Arpeggio
-                const note = melodyNotes[step % melodyNotes.length];
-                playTone(note, 'sawtooth', 0.35, 0.1);
-                step++;
-            }, 450);
+            // 1. Play Real Studio Background Beat Stream
+            bgAudioTrack.src = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3";
+            bgAudioTrack.volume = 0.45;
+            bgAudioTrack.loop = true;
+            bgAudioTrack.play().catch(e => console.log("Audio play allowed on user tap"));
 
-            // 2. Extract clean lyrics only (skip markdown tables & tech data)
+            // 2. Clean lyrics only for singing
             const cleanText = rawLyrics
-                .replace(/\|.*\|/g, '') // remove markdown tables
-                .replace(/[*#_`]/g, '')  // remove formatting
-                .replace(/Key:|BPM:|Scale:|Chords:|Tempo:/gi, '')
+                .replace(/\|.*\|/g, '')
+                .replace(/[*#_`]/g, '')
+                .replace(/Key:|BPM:|Scale:|Chords:|Tempo:|Track Vibe:/gi, '')
                 .split('\n')
                 .filter(line => line.trim().length > 3 && !line.includes('---'))
-                .slice(0, 15) // prevent buffer overflow
+                .slice(0, 16)
                 .join('. ');
 
+            // 3. Sing with proper Hindi/English voice
             if ('speechSynthesis' in window && cleanText.length > 0) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(cleanText);
                 utterance.rate = 0.95;
-                utterance.pitch = 1.15;
+                utterance.pitch = 1.05;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const hindiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('IN'));
+                if (hindiVoice) utterance.voice = hindiVoice;
+
                 utterance.onend = () => stopMusic();
                 utterance.onerror = () => stopMusic();
                 window.speechSynthesis.speak(utterance);
@@ -293,14 +270,19 @@
         }
 
         function stopMusic() {
-            if (beatInterval) { clearInterval(beatInterval); beatInterval = null; }
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            if (bgAudioTrack) {
+                bgAudioTrack.pause();
+                bgAudioTrack.currentTime = 0;
+            }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
         }
 
         async function callGemini(geminiKey, text) {
             const parts = [];
             if (currentImageBase64) parts.push({ inline_data: { mime_type: "image/jpeg", data: currentImageBase64 } });
-            parts.push({ text: `${systemPrompts[currentMode]}\n\nQuestion: ${text || 'Solve step-by-step.'}` });
+            parts.push({ text: `${systemPrompts[currentMode]}\n\nQuestion: ${text || 'Write lyrics in Roman Hinglish / Hindi.'}` });
             
             const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
             let lastErr = "";
@@ -398,7 +380,7 @@
                 return;
             }
 
-            const aiMsgBox = appendMessage('ai', "⚡ AI 360 is thinking...");
+            const aiMsgBox = appendMessage('ai', "⚡ AI 360 Studio is generating track...");
             let responseText = "", success = false, errorMsg = "";
 
             if (prefEngine === 'gemini' || currentImageBase64) {
@@ -428,11 +410,11 @@
                     window.lastSongLyrics = responseText;
                     aiMsgBox.innerHTML = `
                         <div>${responseText.replace(/\n/g, '<br>')}</div>
-                        <div class="audio-box">
-                            <span style="font-size:0.75rem; color:#00f2fe; font-weight:600;">🎵 AI Melody & Rhythm Player:</span>
-                            <div class="audio-btn-row">
-                                <button class="audio-btn" onclick="startSinging(window.lastSongLyrics)">▶️ Play & Sing</button>
-                                <button class="audio-btn stop-btn" onclick="stopMusic()">⏹️ Stop</button>
+                        <div class="studio-player">
+                            <span style="font-size:0.75rem; color:#00f2fe; font-weight:600;">🎧 Studio Beat + Vocal Performance:</span>
+                            <div class="studio-btn-row">
+                                <button class="studio-play-btn" onclick="startSinging(window.lastSongLyrics)">▶️ Play Studio Beat & Vocals</button>
+                                <button class="studio-stop-btn" onclick="stopMusic()">⏹️ Stop</button>
                             </div>
                         </div>
                     `;
