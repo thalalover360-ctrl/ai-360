@@ -10,20 +10,9 @@
         body { background: #060812; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; }
         .glow-bg { position: fixed; top: 15%; left: 50%; transform: translate(-50%, -50%); width: 380px; height: 380px; background: radial-gradient(circle, rgba(0,242,254,0.18) 0%, rgba(79,172,254,0) 75%); z-index: 0; pointer-events: none; }
         
-        header { text-align: center; margin: 15px 0 16px; z-index: 1; position: relative; width: 100%; max-width: 520px; }
+        header { text-align: center; margin: 20px 0 26px; z-index: 1; position: relative; width: 100%; max-width: 520px; }
         .brand-title { font-family: 'Orbitron', sans-serif; font-size: 2.3rem; font-weight: 900; letter-spacing: 1px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #8a2be2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .tagline { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 3px; margin-top: 3px; font-weight: 600; }
-
-        /* Direct API Key Container */
-        .key-container { width: 100%; max-width: 520px; background: rgba(12,18,34,0.9); border: 1px solid rgba(0,242,254,0.3); border-radius: 14px; padding: 12px 14px; margin-bottom: 20px; z-index: 1; box-shadow: 0 0 20px rgba(0,242,254,0.1); }
-        .key-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.76rem; font-weight: 700; color: #00f2fe; }
-        .key-input-row { display: flex; gap: 8px; }
-        .key-input { flex: 1; background: #05070e; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 9px 12px; color: #00f2fe; font-size: 0.82rem; outline: none; }
-        .key-input:focus { border-color: #00f2fe; box-shadow: 0 0 8px rgba(0,242,254,0.4); }
-        .key-save-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 9px 14px; font-size: 0.8rem; font-weight: 800; color: #05070e; cursor: pointer; white-space: nowrap; }
-        
-        .key-status-box { display: none; justify-content: space-between; align-items: center; background: rgba(0,242,254,0.08); border: 1px solid #00f2fe; border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; color: #00f2fe; font-weight: 700; }
-        .key-edit-btn { background: #161e33; border: 1px solid #4facfe; color: #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 0.72rem; cursor: pointer; }
 
         .features-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 520px; z-index: 1; margin-bottom: 25px; }
         .feature-card { background: rgba(15,20,35,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: 0.2s; backdrop-filter: blur(6px); }
@@ -71,23 +60,6 @@
         <h1 class="brand-title">AI 360</h1>
         <p class="tagline">Next-Gen Multi-Modal Neural Hub</p>
     </header>
-
-    <!-- Direct API Key Space -->
-    <div class="key-container" id="keyContainer">
-        <div id="keyInputMode">
-            <div class="key-header-row">
-                <span>🔑 Enter Neural API Key:</span>
-            </div>
-            <div class="key-input-row">
-                <input type="password" id="mainKeyInput" class="key-input" placeholder="Paste Gemini API Key here...">
-                <button class="key-save-btn" onclick="saveMainKey()">Save & Lock</button>
-            </div>
-        </div>
-        <div id="keyLockedMode" class="key-status-box">
-            <span>🟢 Key Connected & Locked</span>
-            <button class="key-edit-btn" onclick="editMainKey()">Edit Key</button>
-        </div>
-    </div>
 
     <div class="features-grid" id="grid">
         <div class="feature-card" onclick="openModule('study')">
@@ -152,46 +124,11 @@
         </div>
     </div>
         <script>
+        // 🔒 PASTE YOUR GEMINI API KEY HERE (Inside quotes):
+        const LOCKED_API_KEY = "PASTE_YOUR_KEY_HERE";
+
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'ghibli';
-
-        function initKeySystem() {
-            const savedKey = localStorage.getItem('ai360_user_key') || '';
-            const inputMode = document.getElementById('keyInputMode');
-            const lockedMode = document.getElementById('keyLockedMode');
-            const keyField = document.getElementById('mainKeyInput');
-
-            if (savedKey.trim().length > 5) {
-                inputMode.style.display = 'none';
-                lockedMode.style.display = 'flex';
-                keyField.value = savedKey;
-            } else {
-                inputMode.style.display = 'block';
-                lockedMode.style.display = 'none';
-            }
-        }
-
-        function saveMainKey() {
-            const val = document.getElementById('mainKeyInput').value.trim();
-            if (!val) {
-                alert("Please paste a valid API key!");
-                return;
-            }
-            localStorage.setItem('ai360_user_key', val);
-            initKeySystem();
-            alert("✅ Key Saved & Locked in Browser!");
-        }
-
-        function editMainKey() {
-            document.getElementById('keyInputMode').style.display = 'block';
-            document.getElementById('keyLockedMode').style.display = 'none';
-        }
-
-        function getActiveKey() {
-            return localStorage.getItem('ai360_user_key') || '';
-        }
-
-        window.addEventListener('DOMContentLoaded', initKeySystem);
 
         const systemPrompts = {
             study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and highlight final answers.",
@@ -204,7 +141,6 @@
             currentMode = mode;
             stopAudio();
             document.getElementById('grid').style.display = 'none';
-            document.getElementById('keyContainer').style.display = 'none';
             document.getElementById('actionPanel').style.display = 'block';
             document.getElementById('panelTitle').innerText = mode.toUpperCase() + " AI ENGINE";
             
@@ -218,7 +154,6 @@
         function closeModule() {
             stopAudio();
             document.getElementById('actionPanel').style.display = 'none';
-            document.getElementById('keyContainer').style.display = 'block';
             document.getElementById('grid').style.display = 'flex';
         }
 
@@ -272,6 +207,7 @@
             return msg;
         }
 
+        // 🎙️ Deep Male Vocal Synthesizer (Strict Male Voice, No Punctuation)
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -319,6 +255,7 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
+        // Smart Dynamic Auto-Discovery Engine
         async function callNeuralCore(apiKey, text, isImage = false) {
             let workingModel = "gemini-2.5-flash";
 
@@ -350,7 +287,7 @@
                     }
                 }
             } catch (e) {
-                console.warn("Auto-detect failed, switching to default chain");
+                console.warn("Auto-detect fallback active");
             }
 
             let parts = [];
@@ -402,7 +339,7 @@
         async function sendMessage() {
             const inputEl = document.getElementById('userInput');
             const text = inputEl.value.trim();
-            const apiKey = getActiveKey();
+            const apiKey = LOCKED_API_KEY.trim();
             
             if (!text && !currentImageBase64) return;
 
@@ -411,12 +348,13 @@
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
+            // 1. Precise Vision-to-Art Pipeline (Captures Facial Hair, Pose & Outfit)
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "🎨 Scanning your facial features & rendering Studio Art...");
                 const seed = Math.floor(Math.random() * 9999999);
                 let visualDescription = text;
 
-                if (currentImageBase64 && apiKey) {
+                if (currentImageBase64 && apiKey && apiKey !== "PASTE_YOUR_KEY_HERE") {
                     try {
                         visualDescription = await callNeuralCore(
                             apiKey,
@@ -460,9 +398,9 @@
                 return;
             }
 
-            if (!apiKey) {
-                appendMessage('ai', "❌ API Key Missing! Please enter and save your key on the main screen.");
-                closeModule();
+            // 2. Neural Core (Study, Music, Gaming)
+            if (!apiKey || apiKey === "PASTE_YOUR_KEY_HERE") {
+                appendMessage('ai', "❌ API Key Missing in Code! Please paste your key in the LOCKED_API_KEY field inside script.");
                 clearImage();
                 return;
             }
