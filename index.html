@@ -75,7 +75,7 @@
             <div class="card-icon">🎙️</div>
             <div class="card-info">
                 <h3>Studio Songwriter & Vocalist 🎵</h3>
-                <p>Catchy Bollywood/Rap lyrics with melodic singing flow audition</p>
+                <p>Catchy Bollywood/Rap lyrics with male singing flow audition</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('imagestudio')">
@@ -124,7 +124,7 @@
         </div>
     </div>
         <script>
-        // 🔒 PERMANENTLY LOCKED & EMBEDDED API KEY (Paste your key inside the quotes)
+        // 🔒 PASTE YOUR GEMINI API KEY HERE (Inside quotes):
         const LOCKED_KEY_PLAIN = "YOUR_GEMINI_API_KEY_HERE";
         const CORE_API_KEY = LOCKED_KEY_PLAIN.trim();
 
@@ -208,7 +208,7 @@
             return msg;
         }
 
-        // 🎙️ Deep Male Vocal Synthesizer (No Female Voices, No Punctuation Pronunciation)
+        // 🎙️ Deep Male Vocal Synthesizer (No Female Voices, No Punctuation)
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -229,7 +229,6 @@
             const u = new SpeechSynthesisUtterance(cleanTxt);
             u.lang = 'hi-IN';
 
-            // Male voice settings: lower pitch and firm pace
             if (currentMode === 'music') {
                 u.pitch = 0.82; 
                 u.rate = 0.98;
@@ -239,7 +238,6 @@
             }
 
             const voices = window.speechSynthesis.getVoices();
-            // Filter strictly for male / neutral hindi voices
             const maleVoice = voices.find(v => 
                 (v.lang.includes('hi') || v.lang.includes('IN')) && 
                 (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('ravi') || v.name.toLowerCase().includes('madhav') || !v.name.toLowerCase().includes('female'))
@@ -318,13 +316,13 @@
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // 1. Precise Vision-to-Art Pipeline (Beard, Mustache, Hair, Pose & Colors)
+            // 1. Precise Vision-to-Art Pipeline (Exact Facial Hair, Pose & Colors)
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "🎨 Scanning your facial features & rendering Studio Art...");
                 const seed = Math.floor(Math.random() * 9999999);
                 let visualDescription = text;
 
-                if (currentImageBase64 && CORE_API_KEY) {
+                if (currentImageBase64 && CORE_API_KEY && CORE_API_KEY !== "YOUR_GEMINI_API_KEY_HERE") {
                     try {
                         visualDescription = await callNeuralCore(
                             "Analyze this photo in extreme detail. Describe the person's exact physical features (South Asian/Indian male, specific facial hair like beard and mustache, short dark hair, skin tone), exact clothing colors (light pink shirt, blue jeans, grey sneakers), and exact pose (sitting on a brown textured sofa). Keep it strictly descriptive in 30 words.", 
@@ -369,7 +367,7 @@
 
             // 2. Neural Core (Study, Music, Gaming)
             if (!CORE_API_KEY || CORE_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
-                appendMessage('ai', "❌ Embedded Key Missing! Please replace YOUR_GEMINI_API_KEY_HERE with your key in the script.");
+                appendMessage('ai', "❌ Embedded Key Missing! Please paste your key in the LOCKED_KEY_PLAIN field in the script.");
                 clearImage();
                 return;
             }
