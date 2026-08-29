@@ -98,16 +98,16 @@
             <div class="card-num">02</div>
             <div class="card-icon">🎵</div>
             <div class="card-info">
-                <h3>Music Studio & Vocal AI 🎙️</h3>
-                <p>Generate tracks, chords, tempo, beats & sing lyrics</p>
+                <h3>AI Songwriter & Lyrics Studio 🎙️</h3>
+                <p>Generate clean Hinglish/Hindi lyrics with Indian Voice recitation</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
             <div class="card-num">03</div>
             <div class="card-icon">🎙️</div>
             <div class="card-info">
-                <h3>Text to Voice AI</h3>
-                <p>Lifelike dynamic speech & instant audio</p>
+                <h3>Text to Voice AI (Indian Accent)</h3>
+                <p>Lifelike dynamic speech with accurate pronunciation</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('image3d')">
@@ -115,7 +115,7 @@
             <div class="card-icon">🎨</div>
             <div class="card-info">
                 <h3>3D Image Generator AI</h3>
-                <p>Hyper-realistic 3D renders & avatars</p>
+                <p>Hyper-realistic HD Flux renders & avatars</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
@@ -182,8 +182,8 @@
 
         const systemPrompts = {
             study: "You are an elite professor and interactive tutor. Provide concise step-by-step mathematical & conceptual solutions, explain formulas clearly, and solve doubts from images accurately.",
-            music: "You are a top Bollywood & Hip-Hop Music Producer. Write STRICTLY in Roman Hinglish (English letters) or clean Devanagari Hindi. NEVER write in Arabic or Urdu script! Provide:\n1. Track Vibe (Key, BPM, Beat Style)\n2. [Verse 1], [Chorus / Hook], [Verse 2], [Outro] with rhyming and rhythm.",
-            voice: "Text to voice engine.",
+            music: "You are a professional Bollywood & Hip-Hop Songwriter. Write STRICTLY in clear Roman Hinglish or Hindi script. Do NOT use Arabic or Urdu script! Provide ONLY catchy song lyrics divided into [Verse] and [Chorus] without technical jargon or extra tables.",
+            voice: "Text to voice engine with Indian accent pronunciation.",
             image3d: "Image render generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
         };
@@ -232,39 +232,44 @@
             return msg;
         }
 
-        // --- Real Studio Beat Stream + Flow Engine ---
-        function startSinging(rawLyrics) {
+        // --- Optimized Indian Voice Recitation & Background Beat Engine ---
+        function speakWithIndianVoice(rawText, playMusic = false) {
             stopMusic();
 
-            // 1. Play Real Studio Background Beat Stream
-            bgAudioTrack.src = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3";
-            bgAudioTrack.volume = 0.45;
-            bgAudioTrack.loop = true;
-            bgAudioTrack.play().catch(e => console.log("Audio play allowed on user tap"));
+            if (playMusic) {
+                bgAudioTrack.src = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3";
+                bgAudioTrack.volume = 0.4;
+                bgAudioTrack.loop = true;
+                bgAudioTrack.play().catch(e => console.log("Audio play allowed"));
+            }
 
-            // 2. Clean lyrics only for singing
-            const cleanText = rawLyrics
+            // Clean up text to ensure correct phonetic reading
+            const cleanText = rawText
                 .replace(/\|.*\|/g, '')
-                .replace(/[*#_`]/g, '')
-                .replace(/Key:|BPM:|Scale:|Chords:|Tempo:|Track Vibe:/gi, '')
+                .replace(/[*#_`[\]]/g, '')
+                .replace(/Verse|Chorus|Hook|Bridge|Track Vibe/gi, '')
                 .split('\n')
-                .filter(line => line.trim().length > 3 && !line.includes('---'))
-                .slice(0, 16)
+                .filter(line => line.trim().length > 2)
                 .join('. ');
 
-            // 3. Sing with proper Hindi/English voice
             if ('speechSynthesis' in window && cleanText.length > 0) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(cleanText);
                 utterance.rate = 0.95;
-                utterance.pitch = 1.05;
-                
-                const voices = window.speechSynthesis.getVoices();
-                const hindiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('IN'));
-                if (hindiVoice) utterance.voice = hindiVoice;
+                utterance.pitch = 1.0;
 
-                utterance.onend = () => stopMusic();
-                utterance.onerror = () => stopMusic();
+                // Force Indian English / Hindi Voice for accurate pronunciation
+                const voices = window.speechSynthesis.getVoices();
+                const indianVoice = voices.find(v => v.lang === 'en-IN' || v.lang === 'hi-IN' || v.name.toLowerCase().includes('india') || v.name.toLowerCase().includes('hindi'));
+                if (indianVoice) {
+                    utterance.voice = indianVoice;
+                    utterance.lang = indianVoice.lang;
+                } else {
+                    utterance.lang = 'en-IN';
+                }
+
+                utterance.onend = () => { if (playMusic) stopMusic(); };
+                utterance.onerror = () => { if (playMusic) stopMusic(); };
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -282,7 +287,7 @@
         async function callGemini(geminiKey, text) {
             const parts = [];
             if (currentImageBase64) parts.push({ inline_data: { mime_type: "image/jpeg", data: currentImageBase64 } });
-            parts.push({ text: `${systemPrompts[currentMode]}\n\nQuestion: ${text || 'Write lyrics in Roman Hinglish / Hindi.'}` });
+            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Prompt: ${text || 'Generate creative response.'}` });
             
             const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
             let lastErr = "";
@@ -358,17 +363,13 @@
             if (!text && !currentImageBase64) return;
 
             let userDisplay = text;
-            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Solve the attached question with step-by-step reasoning.");
+            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Analyze attached image.");
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
             if (currentMode === 'voice') {
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    window.speechSynthesis.speak(utterance);
-                    appendMessage('ai', `🎙️ Speaking: "${text}"`);
-                }
+                speakWithIndianVoice(text, false);
+                appendMessage('ai', `🎙️ Reciting with Indian Accent: "${text}"`);
                 return;
             }
 
@@ -380,7 +381,7 @@
                 return;
             }
 
-            const aiMsgBox = appendMessage('ai', "⚡ AI 360 Studio is generating track...");
+            const aiMsgBox = appendMessage('ai', "⚡ AI 360 is processing...");
             let responseText = "", success = false, errorMsg = "";
 
             if (prefEngine === 'gemini' || currentImageBase64) {
@@ -411,9 +412,9 @@
                     aiMsgBox.innerHTML = `
                         <div>${responseText.replace(/\n/g, '<br>')}</div>
                         <div class="studio-player">
-                            <span style="font-size:0.75rem; color:#00f2fe; font-weight:600;">🎧 Studio Beat + Vocal Performance:</span>
+                            <span style="font-size:0.75rem; color:#00f2fe; font-weight:600;">🎧 Studio Beat + Indian Recitation:</span>
                             <div class="studio-btn-row">
-                                <button class="studio-play-btn" onclick="startSinging(window.lastSongLyrics)">▶️ Play Studio Beat & Vocals</button>
+                                <button class="studio-play-btn" onclick="speakWithIndianVoice(window.lastSongLyrics, true)">▶️ Play Beat & Recite</button>
                                 <button class="studio-stop-btn" onclick="stopMusic()">⏹️ Stop</button>
                             </div>
                         </div>
