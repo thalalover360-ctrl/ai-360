@@ -46,8 +46,11 @@
         .msg-ai { align-self: flex-start; background: #131a2d; color: #e2e8f0; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 10px; margin-top: 8px; border: 1px solid #00f2fe; display: block; }
 
-        .lyrics-box { background: #080d1a; border: 1px solid #00f2fe; border-radius: 12px; padding: 14px; margin-top: 6px; }
-        .copy-track-btn { width: 100%; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 9px; font-size: 0.82rem; font-weight: 800; color: #05070e; cursor: pointer; margin-top: 10px; }
+        .song-card { background: #0a0f1d; border: 1px solid #00f2fe; border-radius: 12px; padding: 14px; margin-top: 8px; }
+        .song-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 9px; font-size: 0.8rem; font-weight: 700; color: #05070e; cursor: pointer; }
+        .v-btn-copy { background: #161e33; color: #00f2fe; border: 1px solid #4facfe; }
+        .v-btn-stop { flex: 0.35; background: #ef4444; color: #fff; }
 
         .img-preview-bar { display: none; align-items: center; gap: 10px; background: #13192b; padding: 8px 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.78rem; color: #00f2fe; }
         .preview-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; }
@@ -86,15 +89,15 @@
             <div class="card-icon">📚</div>
             <div class="card-info">
                 <h3>Study AI + Deep Solver 📸</h3>
-                <p>Derivations, step-by-step problem solver & photo scanner</p>
+                <p>Academic derivations, step-by-step math/physics & photo solver</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('music')">
             <div class="card-num">02</div>
-            <div class="card-icon">✍️</div>
+            <div class="card-icon">🎙️</div>
             <div class="card-info">
-                <h3>Studio Songwriter & Lyricist 🎵</h3>
-                <p>Catchy Bollywood/Rap hooks, rhyming punchlines & song flow</p>
+                <h3>Studio Songwriter & Vocalist 🎵</h3>
+                <p>Catchy Bollywood/Rap lyrics with melodic singing flow audition</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('imagestudio')">
@@ -102,15 +105,15 @@
             <div class="card-icon">🎨</div>
             <div class="card-info">
                 <h3>Photo-to-Art Studio 🖼️</h3>
-                <p>Turn your photos into Studio Ghibli Anime & 3D Octane Art</p>
+                <p>Transform your real photo into Studio Ghibli 2D Anime & 3D Octane Art</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
             <div class="card-num">04</div>
-            <div class="card-icon">🎮</div>
+            <div class="card-info">🎮</div>
             <div class="card-info">
                 <h3>Pro Esports Mentor AI</h3>
-                <p>Tactics, loadouts & clutch decision trees</p>
+                <p>Tactics, weapon mechanics & clutch decision trees</p>
             </div>
         </div>
     </div>
@@ -129,7 +132,7 @@
             <button class="style-btn" onclick="setArtStyle('logo', this)">🔮 3D Metallic Emblem</button>
         </div>
         <div class="chat-box" id="chatBox">
-            <div class="chat-msg msg-ai">⚡ Neural Core Ready. Enter a prompt or upload an image!</div>
+            <div class="chat-msg msg-ai">⚡ Neural Core Ready. Enter a prompt or attach a photo!</div>
         </div>
         <div class="img-preview-bar" id="imgPreviewBar">
             <img id="previewImg" class="preview-thumb">
@@ -165,13 +168,14 @@
 
         const systemPrompts = {
             study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and highlight final answers.",
-            music: "You are an award-winning Indian Bollywood & Hip-Hop Lyricist. Write original, energetic, catchy rhyming verses and hooks in Roman Hinglish. Structure with [Hook], [Verse 1], and [Drop] using tight end-rhymes (AABB or ABAB scheme).",
+            music: "You are an award-winning Bollywood & Hip-Hop Lyricist. Write high-energy, catchy, poetic rhyming lyrics in Roman Hinglish. Use strict AABB rhyming punchlines with clear hooks and verses. Output pure lyrics line-by-line without conversational meta text.",
             imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are a professional Tier-1 esports coach. Give precise clutch decision trees, sensitivity guides, weapon attachments, and optimal positioning strategies."
         };
 
         function openModule(mode) {
             currentMode = mode;
+            stopAudio();
             document.getElementById('grid').style.display = 'none';
             document.getElementById('actionPanel').style.display = 'block';
             document.getElementById('panelTitle').innerText = mode.toUpperCase() + " AI ENGINE";
@@ -179,11 +183,12 @@
             const styleSelector = document.getElementById('styleSelector');
             styleSelector.style.display = (mode === 'imagestudio') ? 'flex' : 'none';
 
-            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Type below or attach a photo!</div>`;
+            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Enter a prompt or upload an image!</div>`;
             clearImage();
         }
 
         function closeModule() {
+            stopAudio();
             document.getElementById('actionPanel').style.display = 'none';
             document.getElementById('grid').style.display = 'flex';
         }
@@ -238,11 +243,50 @@
             return msg;
         }
 
+        // Melodic Vocal Engine (No punctuation reading, singing intonation)
+        function playSpeech(txt) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+
+            let cleanTxt = txt
+                .replace(/\[.*?\]/g, '')
+                .replace(/\(.*?\)/g, '')
+                .replace(/[*#_`~>\-|=]/g, ' ')
+                .replace(/[,:;]/g, ' ')
+                .replace(/\./g, ' ')
+                .replace(/\n+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            if (!cleanTxt) return;
+
+            const u = new SpeechSynthesisUtterance(cleanTxt);
+            if (currentMode === 'music') {
+                u.rate = 1.02;
+                u.pitch = 1.18;
+            } else {
+                u.rate = 0.95;
+                u.pitch = 1.0;
+            }
+            u.lang = 'hi-IN';
+
+            const voices = window.speechSynthesis.getVoices();
+            const indVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('IN') || v.name.includes('India'));
+            if (indVoice) u.voice = indVoice;
+
+            window.speechSynthesis.speak(u);
+        }
+
+        function stopAudio() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
         function copyTxt(t) {
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // Multimodal Fallback Chain (2.0 to 3.5 Models)
+        // Primary Multimodal Fallback Chain (2.0 to 3.5 Models)
         async function callNeuralCore(apiKey, text, isImage = false) {
             const candidateModels = [
                 "gemini-3.5-flash",
@@ -303,34 +347,34 @@
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // 1. Photo-to-Art Pipeline (Vision AI -> Authentic Ghibli/3D Avatar)
+            // 1. Precise Vision-to-Art Pipeline (Captures Exact Facial Hair, Pose & Colors)
             if (currentMode === 'imagestudio') {
-                const loadingMsg = appendMessage('ai', "🎨 Analyzing visual features & rendering Studio Art...");
+                const loadingMsg = appendMessage('ai', "🎨 Scanning your facial features & rendering Studio Art...");
                 const seed = Math.floor(Math.random() * 9999999);
                 let visualDescription = text;
 
-                // Photo scan via Vision AI
                 if (currentImageBase64 && apiKey) {
                     try {
                         visualDescription = await callNeuralCore(
                             apiKey, 
-                            "Extract the visual attributes of the subject in this photo (gender, haircut, pose, facial outline, clothing) in 25 descriptive words for recreating as an authentic 2D anime character.", 
+                            "Analyze this photo in extreme detail. Describe the person's exact physical features (South Asian/Indian male, specific facial hair like beard and mustache, short dark hair, skin tone), exact clothing colors (light pink shirt, blue jeans, grey sneakers), and exact pose (sitting on a brown textured sofa). Keep it strictly descriptive in 30 words.", 
                             true
                         );
                     } catch (e) {
-                        visualDescription = text || "A stylish portrait character";
+                        visualDescription = text || "An Indian young man with stylish beard and mustache";
                     }
                 }
 
                 let finalPrompt = "";
-                let base = visualDescription || "A stylish fantasy anime character";
+                let base = visualDescription || "An Indian male character with beard and mustache";
 
                 if (selectedArtStyle === 'ghibli') {
-                    finalPrompt = `Studio Ghibli 2D anime character art of ${base}, directed by Hayao Miyazaki, hand drawn 2D anime cel animation, vibrant watercolor background, soft aesthetic lighting, highly detailed anime face, 8k masterpiece`;
+                    // Strict 2D Hand-Drawn Anime Cel Style (No 3D / No CGI)
+                    finalPrompt = `Authentic 2D Studio Ghibli anime style illustration of ${base}, directed by Hayao Miyazaki, classic 1990s cel-shaded hand-drawn anime character, flat colors, vibrant watercolor painted background, Miyazaki aesthetic, NO 3D, NO CGI, masterpiece 8k`;
                 } else if (selectedArtStyle === 'realism') {
-                    finalPrompt = `Hyperrealistic 8k octane 3D render portrait of ${base}, cinematic studio lighting, detailed photorealistic textures, raytracing`;
+                    finalPrompt = `Hyperrealistic 8k octane 3D render of ${base}, cinematic studio lighting, detailed photorealistic textures, raytracing`;
                 } else if (selectedArtStyle === 'logo') {
-                    finalPrompt = `3D minimal futuristic metallic logo emblem for ${base}, glowing neon cyan accents, dark backdrop, 8k`;
+                    finalPrompt = `3D minimal futuristic metallic emblem of ${base}, glowing neon cyan accents, dark background, 8k`;
                 }
 
                 const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
@@ -370,12 +414,17 @@
                 if (currentMode === 'music') {
                     window.lastSong = responseText;
                     aiMsgBox.innerHTML = `
-                        <div class="lyrics-box">
+                        <div class="song-card">
                             <div style="color:#00f2fe; font-weight:800; margin-bottom:8px;">🎵 Studio Track & Rhyming Hooks:</div>
                             <div style="font-size:0.84rem; line-height:1.6;">${responseText.replace(/\n/g, '<br>')}</div>
-                            <button class="copy-track-btn" onclick="copyTxt(window.lastSong)">📋 Copy Full Lyrics & Hooks</button>
+                            <div class="song-actions">
+                                <button class="v-btn" onclick="playSpeech(window.lastSong)">🎙️ Sing Vocals</button>
+                                <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy Lyrics</button>
+                                <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️</button>
+                            </div>
                         </div>
                     `;
+                    playSpeech(responseText);
                 } else {
                     aiMsgBox.innerText = responseText;
                 }
