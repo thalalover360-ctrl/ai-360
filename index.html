@@ -207,7 +207,7 @@
             return msg;
         }
 
-        // 🎙️ Deep Male Vocal Synthesizer (Strict Male Voice, No Punctuation)
+        // 🎙️ Deep Male Vocal Synthesizer (Strict Male Voice, Clean Recitation)
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -255,40 +255,14 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // Smart Dynamic Auto-Discovery Engine
+        // Robust Direct Fallback Chain
         async function callNeuralCore(apiKey, text, isImage = false) {
-            let workingModel = "gemini-2.5-flash";
-
-            try {
-                const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-                const listData = await listRes.json();
-                if (listData.models && Array.isArray(listData.models)) {
-                    const validModels = listData.models
-                        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
-                        .map(m => m.name.replace("models/", ""));
-
-                    const priorityList = [
-                        "gemini-3.5-flash",
-                        "gemini-3.5-pro",
-                        "gemini-3.0-flash",
-                        "gemini-2.5-pro",
-                        "gemini-2.5-flash"
-                    ];
-
-                    for (const p of priorityList) {
-                        if (validModels.includes(p)) {
-                            workingModel = p;
-                            break;
-                        }
-                    }
-
-                    if (!priorityList.includes(workingModel) && validModels.length > 0) {
-                        workingModel = validModels[0];
-                    }
-                }
-            } catch (e) {
-                console.warn("Auto-detect fallback active");
-            }
+            const candidateEndpoints = [
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`
+            ];
 
             let parts = [];
             if (isImage && currentImageBase64) {
@@ -303,18 +277,10 @@
                 text: `${systemPrompts[currentMode] || ""}\n\nTask: ${text || "Process and solve step-by-step."}`
             });
 
-            const candidateChain = [
-                workingModel,
-                "gemini-2.5-pro",
-                "gemini-2.5-flash"
-            ];
-            const uniqueChain = [...new Set(candidateChain)];
-
             let lastError = "";
 
-            for (const model of uniqueChain) {
+            for (const endpoint of candidateEndpoints) {
                 try {
-                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
                     const res = await fetch(endpoint, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -348,7 +314,7 @@
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // 1. Precise Vision-to-Art Pipeline (Captures Facial Hair, Pose & Outfit)
+            // 1. Precise Vision-to-Art Pipeline (Exact Facial Hair, Outfit & Pose)
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "🎨 Scanning your facial features & rendering Studio Art...");
                 const seed = Math.floor(Math.random() * 9999999);
@@ -400,7 +366,7 @@
 
             // 2. Neural Core (Study, Music, Gaming)
             if (!apiKey || apiKey === "PASTE_YOUR_KEY_HERE") {
-                appendMessage('ai', "❌ API Key Missing in Code! Please paste your key in the LOCKED_API_KEY field inside script.");
+                appendMessage('ai', "❌ API Key Missing! Please replace PASTE_YOUR_KEY_HERE with your key in the script.");
                 clearImage();
                 return;
             }
