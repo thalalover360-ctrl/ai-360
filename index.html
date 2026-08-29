@@ -91,7 +91,7 @@
             <div class="card-icon">⚡</div>
             <div class="card-info">
                 <h3>Study AI + Photo Solver 📸</h3>
-                <p>Instant derivations & doubt solver</p>
+                <p>Instant step-by-step solutions & derivations</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('music')">
@@ -153,9 +153,10 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-        <script>
+    <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let cachedGroqModels = null;
+        let cachedGeminiModel = null;
 
         const groqEl = document.getElementById('groqKey');
         const geminiEl = document.getElementById('geminiKey');
@@ -175,12 +176,13 @@
             localStorage.setItem('ai360_gemini', geminiEl.value.trim());
             localStorage.setItem('ai360_pref_engine', engineEl.value);
             cachedGroqModels = null;
+            cachedGeminiModel = null;
             toggleModal();
             alert("✅ Keys updated successfully!");
         }
 
         const systemPrompts = {
-            study: "You are an elite professor and IIT-level tutor. Solve questions clearly step-by-step with formulas and final answers highlighted.",
+            study: "You are an elite professor and expert tutor. Solve questions clearly step-by-step with formulas and final answers highlighted.",
             music: "You are an expert Bollywood & Desi Hip-Hop Songwriter. Write ONLY pure rhyming song lyrics in Roman Hinglish. Use format: [Chorus], [Verse 1], [Verse 2].",
             voice: "Text to voice engine.",
             image3d: "Image render generator.",
@@ -269,8 +271,29 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
         }
 
-        // --- Robust Multi-Endpoint Gemini Vision Caller ---
+        // --- Auto Dynamic Model Discovery for Gemini ---
+        async function getWorkingGeminiModel(geminiKey) {
+            if (cachedGeminiModel) return cachedGeminiModel;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
+                const data = await res.json();
+                if (data.models && Array.isArray(data.models)) {
+                    const valid = data.models
+                        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+                        .map(m => m.name.replace("models/", ""));
+                    
+                    const preferred = valid.find(m => m.includes("flash") || m.includes("pro")) || valid[0];
+                    if (preferred) {
+                        cachedGeminiModel = preferred;
+                        return preferred;
+                    }
+                }
+            } catch(e) {}
+            return "gemini-2.5-flash";
+        }
+
         async function callGemini(geminiKey, text) {
+            const modelName = await getWorkingGeminiModel(geminiKey);
             const parts = [];
             if (currentImageBase64) {
                 parts.push({
@@ -282,15 +305,15 @@
             }
             parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Solve step-by-step.'}` });
             
-            const models = [
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
-                "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent"
+            const candidateUrls = [
+                `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`,
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`
             ];
 
             let lastErr = "";
-            for (let url of models) {
+            for (let url of candidateUrls) {
                 try {
                     const response = await fetch(`${url}?key=${geminiKey}`, {
                         method: "POST",
@@ -436,3 +459,5 @@
     </script>
 </body>
 </html>
+
+
