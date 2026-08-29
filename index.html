@@ -76,7 +76,7 @@
             <input type="password" id="groqKey" class="dev-input" placeholder="Paste gsk_ key">
             
             <label style="font-size:0.7rem; color:#8f9ca7;">💎 Vision Core Key (Gemini):</label>
-            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste AIza key">
+            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste Gemini Key">
 
             <button class="save-btn" onclick="saveSettings()">Save & Close</button>
         </div>
@@ -117,7 +117,7 @@
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
             <div class="card-num">05</div>
-            <div class="card-icon">🎮</div>
+            <div class="card-info">🎮</div>
             <div class="card-info">
                 <h3>Gaming Pro Mentor AI</h3>
                 <p>Tactics, loadouts & clutch strategies</p>
@@ -155,7 +155,7 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-    <script>
+        <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let selectedArtStyle = 'realism';
 
@@ -179,7 +179,7 @@
 
         const systemPrompts = {
             study: "You are an expert professor. Solve math, physics, chemistry questions step-by-step with clear derivations and highlight final answers.",
-            music: "You are an elite Indian Bollywood/Rap Songwriter & Lyricist. Write 6-8 catchy, emotional, and rhyming punchlines in Roman Hinglish. Focus purely on poetic vibes and catchy hooks without extra conversational fluff.",
+            music: "You are an elite Indian Bollywood/Rap Songwriter & Lyricist. Write 6-8 catchy, emotional, rhyming punchlines in Roman Hinglish. Deliver pure poetic vibes and punchy rhyming hooks without extra conversational disclaimers.",
             voice: "Text to voice engine.",
             imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
@@ -296,38 +296,29 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
         }
 
-        async function callGemini(geminiKey, text) {
-            const parts = [];
-            if (currentImageBase64) {
-                parts.push({
-                    inline_data: {
-                        mime_type: "image/jpeg",
-                        data: currentImageBase64
-                    }
-                });
+        async function callGroqVision(groqKey, text) {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqKey}` },
+                body: JSON.stringify({
+                    model: "llama-3.2-11b-vision-preview",
+                    messages: [
+                        { role: "system", content: systemPrompts[currentMode] },
+                        {
+                            role: "user",
+                            content: [
+                                { type: "text", text: text || "Solve and analyze step-by-step." },
+                                { type: "image_url", image_url: { url: `data:image/jpeg;base64,${currentImageBase64}` } }
+                            ]
+                        }
+                    ]
+                })
+            });
+            const data = await response.json();
+            if (data.choices && data.choices[0]?.message?.content) {
+                return data.choices[0].message.content;
             }
-            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}` });
-
-            const targetModels = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
-            let lastErr = "";
-
-            for (let m of targetModels) {
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${geminiKey}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: [{ parts }] })
-                    });
-                    const data = await response.json();
-                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                        return data.candidates[0].content.parts[0].text;
-                    }
-                    if (data.error?.message) lastErr = data.error.message;
-                } catch (e) {
-                    lastErr = e.message;
-                }
-            }
-            throw new Error(lastErr || "Gemini API Error");
+            throw new Error(data.error?.message || "Groq Vision Error");
         }
 
         async function callGroqText(groqKey, text) {
@@ -358,16 +349,14 @@
             }
             throw new Error(lastErr || "Groq Text Error");
         }
-
-        async function sendMessage() {
+                    async function sendMessage() {
             const inputEl = document.getElementById('userInput');
             const text = inputEl.value.trim();
             const groqKey = groqEl.value.trim();
-            const geminiKey = geminiEl.value.trim();
             if (!text && !currentImageBase64) return;
 
             let userDisplay = text;
-            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Process attached media.");
+            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Solve and analyze this image.");
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
@@ -384,7 +373,7 @@
                 return;
             }
 
-            // --- AI Image & Art Studio (Modified Ghibli & Realistic Engine) ---
+            // --- AI Image & Art Studio (Flux Hyper-Realism Engine) ---
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "✨ Rendering Ultra-HD Masterpiece...");
                 
@@ -393,12 +382,11 @@
                 let userPromptText = text || "Artistic portrait";
 
                 if (selectedArtStyle === 'realism') {
-                    finalPrompt = encodeURIComponent(`${userPromptText}, hyper-realistic 3d octane render, unreal engine 5, cinematic lighting, 8k resolution`);
+                    finalPrompt = encodeURIComponent(`${userPromptText}, hyper-realistic 3d octane render, unreal engine 5, ray tracing, cinematic lighting, 8k resolution, photorealistic details`);
                 } else if (selectedArtStyle === 'ghibli') {
-                    // Modified Ghibli: Realistic detailed face blending seamlessly into a modern magical Studio Ghibli cinematic background
-                    finalPrompt = encodeURIComponent(`Detailed realistic face and human features of: ${userPromptText}, seamlessly blended into a breathtaking modern Studio Ghibli cinematic aesthetic scenery, Hayao Miyazaki painted background, soft lighting, 8k masterpiece`);
+                    finalPrompt = encodeURIComponent(`Detailed realistic human features of: ${userPromptText}, seamlessly blended into a breathtaking modern Studio Ghibli cinematic scenery, Hayao Miyazaki aesthetic background, soft watercolor gradients, magical atmosphere, 8k resolution`);
                 } else if (selectedArtStyle === 'logo') {
-                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${userPromptText}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, 8k render`);
+                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${userPromptText}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
                 }
 
                 const imgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1024&height=1024&model=flux-realism&seed=${seed}&nologo=true&enhance=true`;
@@ -419,15 +407,17 @@
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is processing...");
             let responseText = "", success = false, errorMsg = "";
 
-            if (geminiKey) {
+            // Photo / Vision Processing via Groq Vision LPU
+            if (currentImageBase64 && groqKey) {
                 try {
-                    responseText = await callGemini(geminiKey, text);
+                    responseText = await callGroqVision(groqKey, text);
                     success = true;
                 } catch (err) {
-                    errorMsg = "Gemini Error: " + err.message;
+                    errorMsg = "Vision LPU Error: " + err.message;
                 }
             }
 
+            // High-Speed Text Processing via Groq LPU (Llama 3.3 70B)
             if (!success && !currentImageBase64 && groqKey) {
                 try {
                     responseText = await callGroqText(groqKey, text);
@@ -435,7 +425,7 @@
                     chatHistory.push({ role: "assistant", content: responseText });
                     success = true;
                 } catch (err) {
-                    errorMsg += " | Groq Error: " + err.message;
+                    errorMsg = "Groq LPU Error: " + err.message;
                 }
             }
 
@@ -455,13 +445,10 @@
                     aiMsgBox.innerText = responseText;
                 }
             } else {
-                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue! Please add your valid API Key in ⚙️ Settings.");
+                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue! Please add your Groq Key in ⚙️ Settings.");
             }
             clearImage();
         }
     </script>
 </body>
 </html>
-
-
-
