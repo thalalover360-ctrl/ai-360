@@ -1,0 +1,17 @@
+{
+  "name": "AI 360 Ecosystem",
+  "short_name": "AI 360",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060812",
+  "theme_color": "#060812",
+  "description": "Next-Gen Multi-Modal Neural Hub",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/4712/4712038.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
