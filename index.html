@@ -308,7 +308,7 @@
             }
             parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}` });
 
-            const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-2.0-flash"];
+            const targetModels = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
             let lastErr = "";
 
             for (let m of targetModels) {
@@ -384,7 +384,7 @@
                 return;
             }
 
-            // --- AI Image & Art Studio (Direct & Sharp Rendering) ---
+            // --- AI Image & Art Studio ---
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "✨ Rendering Ultra-HD Masterpiece...");
                 
@@ -411,18 +411,26 @@
                         </div>
                     `;
                 }, 1000);
+                clearImage();
                 return;
             }
 
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is processing...");
             let responseText = "", success = false, errorMsg = "";
 
-            if (geminiKey) {
+            if (currentImageBase64 && geminiKey) {
                 try {
                     responseText = await callGemini(geminiKey, text);
                     success = true;
                 } catch (err) {
-                    errorMsg = "Gemini: " + err.message;
+                    errorMsg = "Gemini Vision Error: " + err.message;
+                }
+            } else if (geminiKey) {
+                try {
+                    responseText = await callGemini(geminiKey, text);
+                    success = true;
+                } catch (err) {
+                    errorMsg = "Gemini Text Error: " + err.message;
                 }
             }
 
@@ -433,7 +441,7 @@
                     chatHistory.push({ role: "assistant", content: responseText });
                     success = true;
                 } catch (err) {
-                    errorMsg += " | Groq: " + err.message;
+                    errorMsg += " | Groq Error: " + err.message;
                 }
             }
 
@@ -453,7 +461,7 @@
                     aiMsgBox.innerText = responseText;
                 }
             } else {
-                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue. Check ⚙️ Settings.");
+                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue! Please add your valid API Key in ⚙️ Settings.");
             }
             clearImage();
         }
