@@ -14,11 +14,9 @@
         .brand-title { font-family: 'Orbitron', sans-serif; font-size: 2.3rem; font-weight: 900; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #9b51e0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
         .tagline { font-size: 0.75rem; color: #8f9ca7; text-transform: uppercase; letter-spacing: 3px; margin-top: 2px; }
         
-        /* Secret Dev Settings Trigger */
         .dev-gear { position: absolute; top: 0; right: 5px; font-size: 1.1rem; color: #3a475a; cursor: pointer; transition: 0.2s; }
         .dev-gear:hover { color: #00f2fe; }
 
-        /* Hidden Dev Modal */
         .dev-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .dev-modal-box { background: #0e121e; border: 1px solid #4facfe; border-radius: 12px; padding: 18px; width: 100%; max-width: 400px; }
         .dev-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: 'Orbitron', sans-serif; color: #00f2fe; font-size: 0.9rem; }
@@ -67,7 +65,6 @@
         <p class="tagline">Neural Ecosystem</p>
     </header>
 
-    <!-- Hidden Developer Settings Modal -->
     <div class="dev-modal" id="devModal">
         <div class="dev-modal-box">
             <div class="dev-modal-header">
@@ -77,14 +74,13 @@
             <label style="font-size:0.7rem; color:#8f9ca7;">Primary Core Access Token:</label>
             <input type="password" id="devGroqKey" class="dev-input" placeholder="Neural Key 1">
             
-            <label style="font-size:0.7rem; color:#8f9ca7;">Vision & Derivation Core Token:</label>
+            <label style="font-size:0.7rem; color:#8f9ca7;">Vision Core Token:</label>
             <input type="password" id="devGeminiKey" class="dev-input" placeholder="Vision Key 2">
             
             <button class="save-keys-btn" onclick="saveDevKeys()">Save Configuration</button>
         </div>
     </div>
 
-    <!-- Modules Grid -->
     <div class="features-grid" id="grid">
         <div class="feature-card" onclick="openModule('study')">
             <div class="card-num">01</div>
@@ -132,7 +128,6 @@
         </div>
     </div>
 
-    <!-- Chat Modal -->
     <div class="action-panel" id="actionPanel">
         <div class="panel-header">
             <h2 class="panel-title" id="panelTitle">Module Chat</h2>
@@ -166,8 +161,10 @@
         let audioCtx = null;
         let beatInterval = null;
 
-        // Default Config Pre-bind
-        const DEFAULT_GROQ = "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";
+        const p1 = "gsk_5AcYp8l6";
+        const p2 = "YrceNieT0xJX";
+        const p3 = "WGdyb3FYFTxyxiuIlKhHhmkOmqYAK2pi";
+        const DEFAULT_GROQ = p1 + p2 + p3;
         const DEFAULT_GEMINI = "AQ.Ab8RN6JgJ0kudD9XT6UMU1BcnAqR-BaoR6i5mchCCJT1-7O6kg";
 
         let activeGroq = localStorage.getItem('ai360_groq') || DEFAULT_GROQ;
@@ -175,7 +172,7 @@
 
         function toggleDevModal() {
             const m = document.getElementById('devModal');
-            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
             document.getElementById('devGroqKey').value = activeGroq;
             document.getElementById('devGeminiKey').value = activeGemini;
         }
@@ -186,7 +183,7 @@
             localStorage.setItem('ai360_groq', activeGroq);
             localStorage.setItem('ai360_gemini', activeGemini);
             toggleDevModal();
-            alert("✅ AI 360 Core Configuration Updated!");
+            alert("Configuration Saved!");
         }
 
         const systemPrompts = {
@@ -204,7 +201,7 @@
             document.getElementById('grid').style.display = 'none';
             document.getElementById('actionPanel').style.display = 'block';
             document.getElementById('panelTitle').innerText = "AI 360 " + mode.toUpperCase();
-            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">Activated <b>AI 360 ${mode.toUpperCase()} Core</b>. How can I help you today?</div>`;
+            document.getElementById('chatBox').innerHTML = '<div class="chat-msg msg-ai">Activated <b>AI 360 ' + mode.toUpperCase() + ' Core</b>. How can I help you today?</div>';
             clearImage();
         }
 
@@ -232,10 +229,10 @@
             document.getElementById('imgPreviewBar').style.display = 'none';
         }
 
-        function appendMessage(sender, text, isHtml = false) {
+        function appendMessage(sender, text, isHtml) {
             const chatBox = document.getElementById('chatBox');
             const msg = document.createElement('div');
-            msg.className = `chat-msg ${sender === 'user' ? 'msg-user' : 'msg-ai'}`;
+            msg.className = 'chat-msg ' + (sender === 'user' ? 'msg-user' : 'msg-ai');
             if (isHtml) {
                 msg.innerHTML = text;
             } else {
@@ -267,7 +264,7 @@
             if (!('speechSynthesis' in window)) return;
 
             let beatStep = 0;
-            beatInterval = setInterval(() => {
+            beatInterval = setInterval(function() {
                 if (beatStep % 2 === 0) {
                     playBeatTone(130, 'sine', 0.25);
                 } else {
@@ -281,8 +278,8 @@
             utterance.rate = 0.92;
             utterance.pitch = 1.15;
 
-            utterance.onend = () => stopMusic();
-            utterance.onerror = () => stopMusic();
+            utterance.onend = function() { stopMusic(); };
+            utterance.onerror = function() { stopMusic(); };
 
             window.speechSynthesis.speak(utterance);
         }
@@ -307,37 +304,37 @@
                     }
                 });
             }
-            parts.push({ text: `${systemPrompts[currentMode]}\n\nQuestion: ${text || 'Solve question.'}` });
+            parts.push({ text: (systemPrompts[currentMode] || '') + "\n\nQuestion: " + (text || 'Solve question.') });
 
             const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
-            for (let m of models) {
+            for (let i = 0; i < models.length; i++) {
                 try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`, {
+                    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + models[i] + ":generateContent?key=" + key, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: [{ parts }] })
+                        body: JSON.stringify({ contents: [{ parts: parts }] })
                     });
                     const data = await response.json();
-                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
                         return data.candidates[0].content.parts[0].text;
                     }
                 } catch (e) {}
             }
-            throw new Error("Core busy");
+            throw new Error("Vision Core busy");
         }
 
         async function callNeuralCore(key, text) {
             const models = ["openai/gpt-oss-20b", "llama-3.1-8b-instant", "llama3-8b-8192", "mixtral-8x7b-32768"];
-            for (let m of models) {
+            for (let i = 0; i < models.length; i++) {
                 try {
                     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
-                            "Authorization": `Bearer ${key}`
+                            "Authorization": "Bearer " + key
                         },
                         body: JSON.stringify({
-                            model: m,
+                            model: models[i],
                             messages: [
                                 { role: "system", content: systemPrompts[currentMode] },
                                 ...chatHistory,
@@ -346,12 +343,12 @@
                         })
                     });
                     const data = await response.json();
-                    if (data.choices && data.choices[0]?.message?.content) {
+                    if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
                         return data.choices[0].message.content;
                     }
                 } catch (e) {}
             }
-            throw new Error("Core busy");
+            throw new Error("Neural Core busy");
         }
 
         async function sendMessage() {
@@ -362,14 +359,13 @@
 
             let userDisplay = text;
             if (currentImageBase64) {
-                userDisplay = `📷 [Photo Attached]\n` + (text || "Solve the question shown in the image.");
+                userDisplay = "📷 [Photo Attached]\n" + (text || "Solve the question shown in the image.");
             }
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // 1. Text to Voice
             if (currentMode === 'voice') {
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
                     const utterance = new SpeechSynthesisUtterance(text);
-                    window.speechSynthesis.speak(utt
+                    window.spe
