@@ -302,10 +302,6 @@
             }
             
             let promptText = `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}`;
-            if (currentMode === 'ghibli') {
-                promptText = `Transform this attached photo into a magical Studio Ghibli hand-drawn anime art painting style, Hayao Miyazaki aesthetic, beautiful soft watercolor background, highly detailed animation cell.`;
-            }
-
             parts.push({ text: promptText });
 
             const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-2.0-flash"];
@@ -403,22 +399,42 @@
                 return;
             }
 
-            // --- Studio Ghibli Art Converter ---
+            // --- Studio Ghibli Art Converter (Smart Vision Scan) ---
             if (currentMode === 'ghibli') {
+                const loadingMsg = appendMessage('ai', "🌸 Analyzing photo & painting Ghibli art...");
+                
+                let imageDescription = text || "A person portrait";
+                if (geminiKey && currentImageBase64) {
+                    try {
+                        const parts = [
+                            { inline_data: { mime_type: "image/jpeg", data: currentImageBase64 } },
+                            { text: "Describe the person, clothes, pose, and setting in this photo in detail, in short English text." }
+                        ];
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${geminiKey}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ contents: [{ parts }] })
+                        });
+                        const data = await res.json();
+                        if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                            imageDescription = data.candidates[0].content.parts[0].text;
+                        }
+                    } catch (e) {}
+                }
+
                 const seed = Math.floor(Math.random() * 9999999);
-                const ghibliPrompt = encodeURIComponent(`${text || 'anime portrait'}, Studio Ghibli anime style, hand-drawn background, beautiful soft pastel watercolor aesthetic, Hayao Miyazaki masterpiece, highly detailed animation cell`);
+                const ghibliPrompt = encodeURIComponent(`${imageDescription}, Studio Ghibli anime style, hand-drawn background, beautiful soft pastel watercolor aesthetic, Hayao Miyazaki masterpiece, highly detailed animation cell`);
                 const imgUrl = `https://image.pollinations.ai/prompt/${ghibliPrompt}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
 
-                const loadingMsg = appendMessage('ai', "🌸 Painting Studio Ghibli Masterpiece...");
                 setTimeout(() => {
                     loadingMsg.innerHTML = `
-                        <div>🌸 <b>Ghibli Art Converted:</b></div>
+                        <div>🌸 <b>Ghibli Art Converted from your Photo:</b></div>
                         <img src="${imgUrl}" class="msg-img">
                         <div style="margin-top:6px;">
                             <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full Ghibli Art</a>
                         </div>
                     `;
-                }, 1500);
+                }, 1000);
                 return;
             }
 
@@ -487,3 +503,4 @@
     </script>
 </body>
 </html>
+
