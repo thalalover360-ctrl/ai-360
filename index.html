@@ -299,7 +299,10 @@
         async function callGroqVision(groqKey, text) {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqKey}` },
+                headers: { 
+                    "Content-Type": "application/json", 
+                    "Authorization": `Bearer ${groqKey}` 
+                },
                 body: JSON.stringify({
                     model: "llama-3.2-11b-vision-preview",
                     messages: [
@@ -307,7 +310,7 @@
                         {
                             role: "user",
                             content: [
-                                { type: "text", text: text || "Solve and analyze step-by-step." },
+                                { type: "text", text: text || "Solve and analyze this step-by-step." },
                                 { type: "image_url", image_url: { url: `data:image/jpeg;base64,${currentImageBase64}` } }
                             ]
                         }
@@ -318,39 +321,34 @@
             if (data.choices && data.choices[0]?.message?.content) {
                 return data.choices[0].message.content;
             }
-            throw new Error(data.error?.message || "Groq Vision Error");
+            throw new Error(data.error?.message || "Groq Vision Processing Failed");
         }
 
         async function callGroqText(groqKey, text) {
-            const models = ["llama-3.3-70b-versatile", "gemma2-9b-it", "mixtral-8x7b-32768"];
-            let lastErr = "";
-            for (let m of models) {
-                try {
-                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                        method: "POST",
-                        headers: { 
-                            "Content-Type": "application/json", 
-                            "Authorization": `Bearer ${groqKey}` 
-                        },
-                        body: JSON.stringify({
-                            model: m,
-                            messages: [
-                                { role: "system", content: systemPrompts[currentMode] },
-                                ...chatHistory,
-                                { role: "user", content: text }
-                            ]
-                        })
-                    });
-                    const data = await response.json();
-                    if (data.choices && data.choices[0]?.message?.content) {
-                        return data.choices[0].message.content;
-                    }
-                    if (data.error?.message) lastErr = data.error.message;
-                } catch (e) {
-                    lastErr = e.message;
+            try {
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json", 
+                        "Authorization": `Bearer ${groqKey}` 
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: systemPrompts[currentMode] },
+                            ...chatHistory,
+                            { role: "user", content: text }
+                        ]
+                    })
+                });
+                const data = await response.json();
+                if (data.choices && data.choices[0]?.message?.content) {
+                    return data.choices[0].message.content;
                 }
+                throw new Error(data.error?.message || "Groq Text Generation Failed");
+            } catch (e) {
+                throw new Error(e.message || "Groq Text Error");
             }
-            throw new Error(lastErr || "Groq Text Error");
         }
                     async function sendMessage() {
             const inputEl = document.getElementById('userInput');
@@ -376,7 +374,7 @@
                 return;
             }
 
-            // --- AI Image & Art Studio (Flux Hyper-Realism Engine) ---
+            // --- AI Image & Art Studio (Flux Engine) ---
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "✨ Rendering Ultra-HD Masterpiece...");
                 
@@ -410,17 +408,17 @@
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is processing...");
             let responseText = "", success = false, errorMsg = "";
 
-            // Photo / Vision Processing via Groq Vision LPU
+            // Vision Processing (Photo Solver) via Groq Vision
             if (currentImageBase64 && groqKey) {
                 try {
                     responseText = await callGroqVision(groqKey, text);
                     success = true;
                 } catch (err) {
-                    errorMsg = "Vision LPU Error: " + err.message;
+                    errorMsg = "Vision Error: " + err.message;
                 }
             }
 
-            // High-Speed Text Processing via Groq LPU (Llama 3.3 70B & Active Fallbacks)
+            // High-Speed Text Processing via Groq LPU (Llama 3.3 70B)
             if (!success && !currentImageBase64 && groqKey) {
                 try {
                     responseText = await callGroqText(groqKey, text);
@@ -448,7 +446,7 @@
                     aiMsgBox.innerText = responseText;
                 }
             } else {
-                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue! Please add your Groq Key in ⚙️ Settings.");
+                aiMsgBox.innerText = "❌ " + (errorMsg || "Please enter your Groq API Key in ⚙️ Settings.");
             }
             clearImage();
         }
