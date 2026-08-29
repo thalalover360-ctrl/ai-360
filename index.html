@@ -98,7 +98,7 @@
             <div class="card-num">02</div>
             <div class="card-icon">🎵</div>
             <div class="card-info">
-                <h3>AI Songwriter & Vocal Reciter 🎙️</h3>
+                <h3>AI Songwriter & Voice Reciter 🎙️</h3>
                 <p>Catchy Bollywood/Rap lyrics with tap-to-speak voice</p>
             </div>
         </div>
@@ -153,7 +153,7 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-        <script>
+    <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let cachedGroqModels = null;
 
@@ -232,7 +232,7 @@
             return msg;
         }
 
-        // --- Direct Unblocked Speech Execution ---
+        // --- Bulletproof Speech Execution ---
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) {
                 alert("Speech Synthesis not supported");
@@ -240,16 +240,30 @@
             }
 
             window.speechSynthesis.cancel();
+            if (window.speechSynthesis.paused) window.speechSynthesis.resume();
 
-            const cleanTxt = txt.replace(/[*#_`[\]]/g, '').replace(/Verse|Chorus|Hook|Bridge/gi, '').slice(0, 300);
+            // Clean brackets, asterisks, formatting
+            let cleanTxt = txt
+                .replace(/\[.*?\]/g, '')
+                .replace(/\(.*?\)/g, '')
+                .replace(/[*#_`~>\-|=]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .slice(0, 300);
+
             if (!cleanTxt) return;
 
             const u = new SpeechSynthesisUtterance(cleanTxt);
-            u.rate = 1.0;
+            u.rate = 0.95;
             u.pitch = 1.0;
             u.lang = 'hi-IN';
 
-            // Immediate touch dispatch
+            const voices = window.speechSynthesis.getVoices();
+            const indVoice = voices.find(v => v.lang === 'hi-IN' || v.lang === 'en-IN' || v.name.toLowerCase().includes('india') || v.name.toLowerCase().includes('hindi'));
+            if (indVoice) {
+                u.voice = indVoice;
+            }
+
             window.speechSynthesis.speak(u);
         }
 
@@ -412,3 +426,6 @@
     </script>
 </body>
 </html>
+
+
+
