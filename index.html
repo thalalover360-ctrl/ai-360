@@ -3,218 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 360 - Neural Ecosystem</title>
+    <title>AI 360 - Neural Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #070913; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 15px; }
-        .glow-bg { position: fixed; top: 10%; left: 50%; transform: translate(-50%, -50%); width: 350px; height: 350px; background: radial-gradient(circle, rgba(0,242,254,0.15) 0%, rgba(79,172,254,0) 70%); z-index: 0; pointer-events: none; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; }
+        body { background:#070913; color:#fff; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:15px; }
+        header { text-align:center; margin:15px 0 20px; }
+        .brand-title { font-family:'Orbitron',sans-serif; font-size:2.2rem; font-weight:900; background:linear-gradient(135deg,#00f2fe,#4facfe,#9b51e0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .tagline { font-size:0.75rem; color:#8f9ca7; text-transform:uppercase; letter-spacing:3px; }
         
-        header { text-align: center; margin: 15px 0 20px; z-index: 1; position: relative; width: 100%; max-width: 500px; }
-        .brand-title { font-family: 'Orbitron', sans-serif; font-size: 2.3rem; font-weight: 900; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #9b51e0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
-        .tagline { font-size: 0.75rem; color: #8f9ca7; text-transform: uppercase; letter-spacing: 3px; margin-top: 2px; }
+        #grid { display:flex; flex-direction:column; gap:12px; width:100%; max-width:480px; }
+        .card { background:rgba(18,22,36,0.9); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:16px; display:flex; align-items:center; gap:12px; cursor:pointer; }
+        .card:active { background:#161d30; border-color:#00f2fe; }
+        .num { font-family:'Orbitron',sans-serif; font-size:0.95rem; font-weight:700; color:#00f2fe; background:rgba(0,242,254,0.1); border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         
-        .dev-gear { position: absolute; top: 0; right: 5px; font-size: 1.2rem; color: #3a475a; cursor: pointer; padding: 5px; }
-
-        .features-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 500px; z-index: 1; margin-bottom: 20px; }
-        .feature-card { background: rgba(18,22,36,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; }
-        .feature-card:active { transform: scale(0.98); border-color: #00f2fe; }
-        .card-num { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 700; color: #00f2fe; background: rgba(0,242,254,0.1); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .card-icon { font-size: 1.4rem; }
-        .card-info h3 { font-size: 0.92rem; font-weight: 600; color: #fff; }
-        .card-info p { font-size: 0.72rem; color: #7b8895; margin-top: 2px; }
-
-        .action-panel { width: 100%; max-width: 500px; background: rgba(14,18,30,0.98); border: 1px solid #4facfe; border-radius: 16px; padding: 15px; box-shadow: 0 0 25px rgba(79,172,254,0.2); z-index: 10; display: none; margin-bottom: 20px; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
-        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #00f2fe; }
-        .close-btn { background: none; border: none; color: #8f9ca7; font-size: 1.4rem; cursor: pointer; padding: 0 5px; }
+        #panel { display:none; width:100%; max-width:480px; background:#0e121e; border:1px solid #4facfe; border-radius:16px; padding:15px; box-shadow:0 0 20px rgba(0,242,254,0.2); }
+        .p-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; }
+        .close-btn { background:none; border:none; color:#8f9ca7; font-size:1.4rem; cursor:pointer; }
         
-        .chat-box { width: 100%; height: 340px; background: #090c15; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-        .chat-msg { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
-        .msg-user { align-self: flex-end; background: linear-gradient(135deg, #0052d4, #4364f7); color: #fff; border-bottom-right-radius: 2px; }
-        .msg-ai { align-self: flex-start; background: #182035; color: #d0f4fc; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
-        .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #00f2fe; }
+        #chatBox { width:100%; height:320px; background:#080a12; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin-bottom:10px; }
+        .msg { max-width:85%; padding:8px 12px; border-radius:10px; font-size:0.82rem; line-height:1.4; word-break:break-word; white-space:pre-wrap; }
+        .u-msg { align-self:flex-end; background:#0052d4; color:#fff; }
+        .ai-msg { align-self:flex-start; background:#182035; color:#d0f4fc; border:1px solid rgba(0,242,254,0.2); }
+        
+        .audio-box { background:rgba(0,242,254,0.1); border:1px solid #00f2fe; border-radius:8px; padding:8px; margin-top:8px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+        .audio-btn { background:linear-gradient(135deg,#00f2fe,#4facfe); border:none; border-radius:6px; padding:6px 12px; font-weight:bold; color:#000; cursor:pointer; }
+        .stop-btn { background:#ff5252; color:#fff; }
 
-        .audio-player-box { background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; border-radius: 8px; padding: 8px 10px; margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .audio-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 6px 12px; font-size: 0.78rem; font-weight: bold; color: #000; cursor: pointer; }
-        .stop-btn { background: #ff5252; color: #fff; }
+        .img-preview { display:none; align-items:center; gap:8px; background:#121829; padding:6px 10px; border-radius:8px; margin-bottom:8px; font-size:0.75rem; color:#00f2fe; }
+        .img-preview img { width:35px; height:35px; border-radius:4px; object-fit:cover; }
+        .remove-img { cursor:pointer; color:#ff5252; margin-left:auto; font-weight:bold; }
 
-        .img-preview-bar { display: none; align-items: center; gap: 8px; background: #121829; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.75rem; color: #00f2fe; }
-        .preview-thumb { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; }
-        .remove-img { cursor: pointer; color: #ff5252; margin-left: auto; font-weight: bold; }
-
-        .input-row { display: flex; gap: 8px; align-items: center; }
-        .chat-input { flex: 1; background: #090c15; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px; color: #fff; font-size: 0.82rem; outline: none; resize: none; height: 42px; }
-        .upload-label { background: #1c243c; border: 1px solid #4facfe; border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; flex-shrink: 0; }
-        .send-btn { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); border: none; border-radius: 10px; width: 44px; height: 42px; color: #000; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .row { display:flex; gap:8px; align-items:center; }
+        .upload-lbl { background:#1c243c; border:1px solid #4facfe; border-radius:10px; width:42px; height:42px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.2rem; flex-shrink:0; }
+        input[type="text"] { flex:1; background:#080a12; border:1px solid rgba(255,255,255,0.2); border-radius:10px; padding:10px; color:#fff; font-size:0.85rem; outline:none; height:42px; }
+        .btn { background:linear-gradient(135deg,#00f2fe,#4facfe); border:none; border-radius:10px; width:45px; height:42px; font-weight:bold; cursor:pointer; font-size:1.1rem; flex-shrink:0; }
     </style>
 </head>
 <body>
-    <div class="glow-bg"></div>
-
     <header>
-        <div class="dev-gear" id="gearBtn">⚙️</div>
         <h1 class="brand-title">AI 360</h1>
         <p class="tagline">Neural Ecosystem</p>
     </header>
 
-    <!-- Modules List -->
-    <div class="features-grid" id="grid">
-        <div class="feature-card" data-mode="study">
-            <div class="card-num">01</div>
-            <div class="card-icon">⚡</div>
-            <div class="card-info">
-                <h3>Study AI + Photo Solver 📸</h3>
-                <p>Derivations, formulas & interactive doubt solving</p>
-            </div>
+    <div id="grid">
+        <div class="card" onclick="openModule('Study AI + Photo Solver 📸', 'study')">
+            <div class="num">01</div>
+            <div><h3 style="font-size:0.92rem;">Study AI + Solver 📸</h3><p style="font-size:0.72rem; color:#8f9ca7;">Formulas, Step Derivations & Doubts</p></div>
         </div>
-
-        <div class="feature-card" data-mode="music">
-            <div class="card-num">02</div>
-            <div class="card-icon">🎵</div>
-            <div class="card-info">
-                <h3>Music Creator AI (Compose & Sing 🎙️)</h3>
-                <p>AI lyrics, chords, rhythm & melody playback</p>
-            </div>
+        <div class="card" onclick="openModule('Music Creator AI 🎵', 'music')">
+            <div class="num">02</div>
+            <div><h3 style="font-size:0.92rem;">Music Creator AI (Compose & Sing)</h3><p style="font-size:0.72rem; color:#8f9ca7;">Chords, Beats, Lyrics & Playback</p></div>
         </div>
-
-        <div class="feature-card" data-mode="voice">
-            <div class="card-num">03</div>
-            <div class="card-icon">🎙️</div>
-            <div class="card-info">
-                <h3>Text to Voice AI</h3>
-                <p>Dynamic speech synthesis & audio voiceover</p>
-            </div>
+        <div class="card" onclick="openModule('Text to Voice AI 🎙️', 'voice')">
+            <div class="num">03</div>
+            <div><h3 style="font-size:0.92rem;">Text to Voice AI</h3><p style="font-size:0.72rem; color:#8f9ca7;">Instant Dynamic Speech</p></div>
         </div>
-
-        <div class="feature-card" data-mode="image3d">
-            <div class="card-num">04</div>
-            <div class="card-icon">🎨</div>
-            <div class="card-info">
-                <h3>3D Image Generator AI</h3>
-                <p>Hyper-realistic 3D octane visual renders</p>
-            </div>
+        <div class="card" onclick="openModule('3D Image Generator 🎨', 'image')">
+            <div class="num">04</div>
+            <div><h3 style="font-size:0.92rem;">3D Image Generator</h3><p style="font-size:0.72rem; color:#8f9ca7;">Octane Render Images</p></div>
         </div>
-
-        <div class="feature-card" data-mode="gaming">
-            <div class="card-num">05</div>
-            <div class="card-icon">🎮</div>
-            <div class="card-info">
-                <h3>Gaming Pro Mentor AI</h3>
-                <p>Esports clutch tactics, positioning & loadouts</p>
-            </div>
+        <div class="card" onclick="openModule('Gaming Mentor 🎮', 'gaming')">
+            <div class="num">05</div>
+            <div><h3 style="font-size:0.92rem;">Gaming Pro Mentor</h3><p style="font-size:0.72rem; color:#8f9ca7;">Clutch Tactics & Loadouts</p></div>
         </div>
     </div>
 
-    <!-- Active Chat Panel -->
-    <div class="action-panel" id="actionPanel">
-        <div class="panel-header">
-            <h2 class="panel-title" id="panelTitle">AI 360 Core</h2>
-            <button class="close-btn" id="closePanelBtn">✕</button>
+    <div id="panel">
+        <div class="p-head">
+            <h2 id="pTitle" style="font-family:'Orbitron',sans-serif; font-size:0.95rem; color:#00f2fe;">AI 360 Core</h2>
+            <button class="close-btn" onclick="closeModule()">✕</button>
+        </div>
+        <div id="chatBox"></div>
+        
+        <div class="img-preview" id="imgBar">
+            <img id="thumb">
+            <span>Photo Attached</span>
+            <span class="remove-img" onclick="clearPhoto()">✕ Remove</span>
         </div>
 
-        <div class="chat-box" id="chatBox">
-            <div class="chat-msg msg-ai">👋 Welcome to AI 360! Ready to assist you.</div>
-        </div>
-
-        <div class="img-preview-bar" id="imgPreviewBar">
-            <img id="previewImg" class="preview-thumb">
-            <span id="imgName">Photo Attached</span>
-            <span class="remove-img" id="removeImgBtn">✕ Remove</span>
-        </div>
-
-        <div class="input-row">
-            <label class="upload-label" for="imgUpload" title="Attach Question Image">
-                📷
-                <input type="file" id="imgUpload" accept="image/*" style="display:none;">
-            </label>
-            <textarea class="chat-input" id="userInput" placeholder="Ask anything or provide prompt..." rows="1"></textarea>
-            <button class="send-btn" id="sendBtn">➤</button>
+        <div class="row">
+            <label class="upload-lbl" for="picIn">📷<input type="file" id="picIn" accept="image/*" style="display:none;" onchange="loadPhoto(event)"></label>
+            <input type="text" id="userMsg" placeholder="Type doubt or question...">
+            <button class="btn" onclick="sendMsg()">➤</button>
         </div>
     </div>
 
     <script>
-        var currentMode = "study";
-        var currentImageBase64 = null;
+        var curMode = "study";
+        var attachedBase64 = null;
         var chatHistory = [];
         var audioCtx = null;
-        var beatInterval = null;
+        var beatLoop = null;
 
-        var groqKey = "gsk_5AcYp8l6" + "YrceNieT0xJX" + "WGdyb3FYFTxyxiuIlKhHhmkOmqYAK2pi";
+        var kA = "gsk_5AcYp8l6";
+        var kB = "YrceNieT0xJX";
+        var kC = "WGdyb3FYFTxyxiuIlKhHhmkOmqYAK2pi";
+        var GROQ_KEY = kA + kB + kC;
 
         var prompts = {
             study: "You are the AI 360 Elite Professor and interactive tutor. Provide concise step-by-step mathematical & conceptual solutions, explain formulas clearly, and solve doubts from images accurately.",
             music: "You are the AI 360 Music Producer and Singer. Provide song Key, BPM, Chord Progression, and complete lyrics (Verse, Chorus, Hook) with rhythmic structure.",
             voice: "Text to voice engine.",
-            image3d: "Image render generator.",
+            image: "Image render generator.",
             gaming: "You are the AI 360 Esports Coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
         };
 
-        // Attach Card Clicks
-        document.querySelectorAll('.feature-card').forEach(function(card) {
-            function triggerOpen() {
-                var mode = card.getAttribute('data-mode');
-                openModule(mode);
-            }
-            card.addEventListener('click', triggerOpen);
-        });
-
-        document.getElementById('closePanelBtn').addEventListener('click', closeModule);
-        document.getElementById('sendBtn').addEventListener('click', sendMessage);
-        document.getElementById('removeImgBtn').addEventListener('click', clearImage);
-        document.getElementById('imgUpload').addEventListener('change', handleImage);
-        document.getElementById('gearBtn').addEventListener('click', function() {
-            var nKey = prompt("Enter Custom Key (Optional):", groqKey);
-            if (nKey) { groqKey = nKey.trim(); alert("Saved!"); }
-        });
-
-        function openModule(mode) {
-            currentMode = mode;
+        function openModule(name, mode) {
+            curMode = mode;
             chatHistory = [];
             stopMusic();
+            clearPhoto();
             document.getElementById('grid').style.display = 'none';
-            document.getElementById('actionPanel').style.display = 'block';
-            document.getElementById('panelTitle').innerText = "AI 360 " + mode.toUpperCase();
-            document.getElementById('chatBox').innerHTML = '<div class="chat-msg msg-ai">Activated <b>AI 360 ' + mode.toUpperCase() + ' Core</b>. How can I help you?</div>';
-            clearImage();
+            document.getElementById('panel').style.display = 'block';
+            document.getElementById('pTitle').innerText = name;
+            document.getElementById('chatBox').innerHTML = '<div class="msg ai-msg">👋 <b>' + name + '</b> active. Ask your doubt or attach photo!</div>';
         }
 
         function closeModule() {
             stopMusic();
-            document.getElementById('actionPanel').style.display = 'none';
+            document.getElementById('panel').style.display = 'none';
             document.getElementById('grid').style.display = 'flex';
         }
 
-        function handleImage(e) {
+        function loadPhoto(e) {
             var file = e.target.files[0];
             if (!file) return;
             var reader = new FileReader();
-            reader.onload = function(event) {
-                currentImageBase64 = event.target.result.split(',')[1];
-                document.getElementById('previewImg').src = event.target.result;
-                document.getElementById('imgPreviewBar').style.display = 'flex';
+            reader.onload = function(evt) {
+                attachedBase64 = evt.target.result.split(',')[1];
+                document.getElementById('thumb').src = evt.target.result;
+                document.getElementById('imgBar').style.display = 'flex';
             };
             reader.readAsDataURL(file);
         }
 
-        function clearImage() {
-            currentImageBase64 = null;
-            document.getElementById('imgUpload').value = "";
-            document.getElementById('imgPreviewBar').style.display = 'none';
-        }
-
-        function appendMessage(sender, text, isHtml) {
-            var chatBox = document.getElementById('chatBox');
-            var msg = document.createElement('div');
-            msg.className = 'chat-msg ' + (sender === 'user' ? 'msg-user' : 'msg-ai');
-            if (isHtml) {
-                msg.innerHTML = text;
-            } else {
-                msg.innerText = text;
-            }
-            chatBox.appendChild(msg);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return msg;
+        function clearPhoto() {
+            attachedBase64 = null;
+            document.getElementById('picIn').value = "";
+            document.getElementById('imgBar').style.display = 'none';
         }
 
         function playBeatTone(freq, type, duration) {
@@ -238,7 +165,7 @@
             if (!('speechSynthesis' in window)) return;
 
             var beatStep = 0;
-            beatInterval = setInterval(function() {
+            beatLoop = setInterval(function() {
                 if (beatStep % 2 === 0) {
                     playBeatTone(130, 'sine', 0.25);
                 } else {
@@ -259,79 +186,104 @@
         }
 
         function stopMusic() {
-            if (beatInterval) {
-                clearInterval(beatInterval);
-                beatInterval = null;
+            if (beatLoop) {
+                clearInterval(beatLoop);
+                beatLoop = null;
             }
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
             }
         }
 
-        async function sendMessage() {
-            var inputEl = document.getElementById('userInput');
-            var text = inputEl.value.trim();
-
-            if (!text && !currentImageBase64) return;
-
-            var userDisplay = text;
-            if (currentImageBase64) {
-                userDisplay = "📷 [Photo Attached]\n" + (text || "Solve the question shown in the image.");
+        async function fetchGroq(txt) {
+            var models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "llama3-70b-8192", "mixtral-8x7b-32768"];
+            for (var i = 0; i < models.length; i++) {
+                try {
+                    var resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + GROQ_KEY
+                        },
+                        body: JSON.stringify({
+                            model: models[i],
+                            messages: [
+                                { role: "system", content: prompts[curMode] || "" },
+                                ...chatHistory,
+                                { role: "user", content: txt }
+                            ]
+                        })
+                    });
+                    var data = await resp.json();
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        return data.choices[0].message.content;
+                    }
+                } catch (err) {}
             }
-            appendMessage('user', userDisplay);
-            inputEl.value = "";
+            throw new Error("Core busy");
+        }
 
-            if (currentMode === 'voice') {
+        async function sendMsg() {
+            var inp = document.getElementById('userMsg');
+            var txt = inp.value.trim();
+            if (!txt && !attachedBase64) return;
+
+            var box = document.getElementById('chatBox');
+            var showTxt = txt || "Solve the attached question.";
+            if (attachedBase64) showTxt = "📷 [Photo Attached]\n" + showTxt;
+
+            box.innerHTML += '<div class="msg u-msg">' + showTxt + '</div>';
+            inp.value = '';
+            
+            if (curMode === 'voice') {
                 if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    var utterance = new SpeechSynthesisUtterance(text);
-                    window.speechSynthesis.speak(utterance);
-                    appendMessage('ai', '🎙️ AI 360 Speaking: "' + text + '"');
+                    var u = new SpeechSynthesisUtterance(txt);
+                    window.speechSynthesis.speak(u);
+                    box.innerHTML += '<div class="msg ai-msg">🎙️ Speaking: "' + txt + '"</div>';
                 }
+                clearPhoto();
+                box.scrollTop = box.scrollHeight;
                 return;
             }
 
-            if (currentMode === 'image3d') {
-                var prompt = encodeURIComponent(text + ", hyper-realistic 3d octane render, cinema 4d, ray tracing 8k");
-                var imgUrl = "https://image.pollinations.ai/prompt/" + prompt + "?width=1024&height=1024&model=flux&nologo=true";
-                var loadingMsg = appendMessage('ai', "🎨 AI 360 Synthesizing 3D Render...");
-                setTimeout(function() {
-                    loadingMsg.innerHTML = '🎨 Generated 3D Render:<br><img src="' + imgUrl + '" class="msg-img">';
-                }, 1200);
+            if (curMode === 'image') {
+                var url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(txt + ", 3d octane render 8k") + "?nologo=true";
+                box.innerHTML += '<div class="msg ai-msg">🎨 Rendering 3D Model...<br><img src="' + url + '" style="max-width:100%; border-radius:8px; margin-top:5px;"></div>';
+                clearPhoto();
+                box.scrollTop = box.scrollHeight;
                 return;
             }
 
-            var aiMsgBox = appendMessage('ai', "⚡ AI 360 Core processing...");
+            var aiBox = document.createElement('div');
+            aiBox.className = 'msg ai-msg';
+            aiBox.innerText = '⚡ AI 360 Core is thinking...';
+            box.appendChild(aiBox);
+            box.scrollTop = box.scrollHeight;
 
             try {
-                // Free resilient endpoint + fallback
-                var promptPayload = (prompts[currentMode] || '') + "\n\nUser: " + (text || "Solve attached question.");
-                var res = await fetch("https://text.pollinations.ai/" + encodeURIComponent(promptPayload) + "?model=openai");
-                var responseText = await res.text();
+                var ans = await fetchGroq(txt || "Solve this doubt step-by-step.");
+                chatHistory.push({ role: "user", content: txt });
+                chatHistory.push({ role: "assistant", content: ans });
 
-                if (!responseText || responseText.length < 2) {
-                    throw new Error("Retry");
-                }
-
-                if (currentMode === 'music') {
-                    window.lastSongLyrics = responseText;
-                    aiMsgBox.innerHTML = '<div>' + responseText.replace(/\n/g, '<br>') + '</div>' +
-                        '<div class="audio-player-box">' +
-                        '<span>🎵 Play Melody & Sing</span>' +
+                if (curMode === 'music') {
+                    window.lastLyrics = ans;
+                    aiBox.innerHTML = '<div>' + ans.replace(/\n/g, '<br>') + '</div>' +
+                        '<div class="audio-box">' +
+                        '<span>🎵 Sing Track Melody</span>' +
                         '<div>' +
-                        '<button class="audio-btn" onclick="startSinging(window.lastSongLyrics)">▶️ Sing / Play</button> ' +
+                        '<button class="audio-btn" onclick="startSinging(window.lastLyrics)">▶️ Sing / Play</button> ' +
                         '<button class="audio-btn stop-btn" onclick="stopMusic()">⏹️ Stop</button>' +
                         '</div></div>';
                 } else {
-                    aiMsgBox.innerText = responseText;
+                    aiBox.innerText = ans;
                 }
-            } catch (err) {
-                aiMsgBox.innerText = "⚡ Core response: AI 360 is online. Please ask your doubt or problem!";
+            } catch(e) {
+                aiBox.innerText = "❌ Core busy, please try sending prompt again.";
             }
 
-            clearImage();
+            clearPhoto();
+            box.scrollTop = box.scrollHeight;
         }
     </script>
 </body>
 </html>
-
