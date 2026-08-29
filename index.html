@@ -3,121 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 360 - Neural Ecosystem Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>AI 360 - Next-Gen Neural Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #070913; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 15px; }
-        .glow-bg { position: fixed; top: 10%; left: 50%; transform: translate(-50%, -50%); width: 350px; height: 350px; background: radial-gradient(circle, rgba(0,242,254,0.15) 0%, rgba(79,172,254,0) 70%); z-index: 0; pointer-events: none; }
-        header { text-align: center; margin: 15px 0 20px; z-index: 1; position: relative; width: 100%; max-width: 500px; }
-        .brand-title { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #9b51e0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .tagline { font-size: 0.75rem; color: #8f9ca7; text-transform: uppercase; letter-spacing: 2.5px; margin-top: 2px; }
-        .dev-gear { position: absolute; top: 0; right: 5px; font-size: 1.3rem; color: #4facfe; cursor: pointer; padding: 5px; }
-
-        .dev-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
-        .dev-modal-box { background: #0e121e; border: 1px solid #4facfe; border-radius: 14px; padding: 18px; width: 100%; max-width: 400px; }
-        .dev-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: 'Orbitron', sans-serif; color: #00f2fe; font-size: 0.9rem; }
-        .dev-input { width: 100%; background: #080a12; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 8px 10px; color: #00f2fe; font-size: 0.75rem; margin-top: 4px; margin-bottom: 10px; outline: none; }
-        .save-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px 14px; font-weight: bold; cursor: pointer; width: 100%; color: #000; font-size: 0.8rem; }
-
-        .features-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px; z-index: 1; margin-bottom: 20px; }
-        .feature-card { background: rgba(18,22,36,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .feature-card:active { transform: scale(0.98); border-color: #00f2fe; }
-        .card-num { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; color: #00f2fe; background: rgba(0,242,254,0.1); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .card-icon { font-size: 1.3rem; }
-        .card-info h3 { font-size: 0.85rem; font-weight: 600; }
-        .card-info p { font-size: 0.68rem; color: #7b8895; }
-
-        .action-panel { width: 100%; max-width: 500px; background: rgba(14,18,30,0.98); border: 1px solid #4facfe; border-radius: 16px; padding: 15px; box-shadow: 0 0 25px rgba(79,172,254,0.2); z-index: 2; display: none; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
-        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #00f2fe; }
-        .close-btn { background: none; border: none; color: #8f9ca7; font-size: 1.2rem; cursor: pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #060812; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 16px; }
+        .glow-bg { position: fixed; top: 15%; left: 50%; transform: translate(-50%, -50%); width: 380px; height: 380px; background: radial-gradient(circle, rgba(0,242,254,0.18) 0%, rgba(79,172,254,0) 75%); z-index: 0; pointer-events: none; }
         
-        .style-selector { display: none; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-        .style-btn { background: #1c243c; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; color: #fff; cursor: pointer; }
-        .style-btn.active { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #000; font-weight: bold; border-color: #00f2fe; }
+        header { text-align: center; margin: 15px 0 22px; z-index: 1; position: relative; width: 100%; max-width: 520px; }
+        .brand-title { font-family: 'Orbitron', sans-serif; font-size: 2.3rem; font-weight: 900; letter-spacing: 1px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #8a2be2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tagline { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 3px; margin-top: 3px; font-weight: 600; }
+        .dev-gear { position: absolute; top: 0; right: 0; font-size: 0.82rem; background: rgba(79,172,254,0.12); border: 1px solid rgba(0,242,254,0.3); border-radius: 8px; color: #00f2fe; cursor: pointer; padding: 6px 12px; display: flex; align-items: center; gap: 5px; font-weight: 600; }
 
-        .chat-box { width: 100%; height: 320px; background: #090c15; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-        .chat-msg { max-width: 90%; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
+        .dev-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
+        .dev-modal-box { background: #0c101d; border: 1px solid #00f2fe; border-radius: 16px; padding: 20px; width: 100%; max-width: 420px; box-shadow: 0 0 35px rgba(0,242,254,0.25); }
+        .dev-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-family: 'Orbitron', sans-serif; color: #00f2fe; font-size: 0.95rem; }
+        .dev-input { width: 100%; background: #05070e; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 10px 12px; color: #00f2fe; font-size: 0.8rem; margin-top: 6px; margin-bottom: 14px; outline: none; transition: 0.2s; }
+        .dev-input:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0,242,254,0.3); }
+        .save-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; width: 100%; color: #05070e; font-size: 0.85rem; }
+
+        .features-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 520px; z-index: 1; margin-bottom: 25px; }
+        .feature-card { background: rgba(15,20,35,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: 0.2s; backdrop-filter: blur(6px); }
+        .feature-card:active { transform: scale(0.98); border-color: #00f2fe; }
+        .card-num { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 800; color: #00f2fe; background: rgba(0,242,254,0.12); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .card-icon { font-size: 1.4rem; }
+        .card-info h3 { font-size: 0.92rem; font-weight: 700; color: #fff; }
+        .card-info p { font-size: 0.72rem; color: #8f9ba8; margin-top: 2px; }
+
+        .action-panel { width: 100%; max-width: 520px; background: rgba(12,16,28,0.98); border: 1px solid #4facfe; border-radius: 18px; padding: 16px; box-shadow: 0 0 30px rgba(79,172,254,0.15); z-index: 2; display: none; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .panel-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: #00f2fe; letter-spacing: 0.5px; }
+        .close-btn { background: none; border: none; color: #94a3b8; font-size: 1.3rem; cursor: pointer; }
+        
+        .style-selector { display: none; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+        .style-btn { background: #161e33; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 12px; font-size: 0.72rem; color: #cbd5e1; cursor: pointer; font-weight: 600; }
+        .style-btn.active { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #05070e; font-weight: 700; border-color: #00f2fe; }
+
+        .chat-box { width: 100%; height: 350px; background: #070a14; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+        .chat-msg { max-width: 92%; padding: 10px 14px; border-radius: 12px; font-size: 0.84rem; line-height: 1.5; word-break: break-word; white-space: pre-wrap; }
         .msg-user { align-self: flex-end; background: linear-gradient(135deg, #0052d4, #4364f7); color: #fff; border-bottom-right-radius: 2px; }
-        .msg-ai { align-self: flex-start; background: #182035; color: #d0f4fc; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
-        .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #00f2fe; }
+        .msg-ai { align-self: flex-start; background: #131a2d; color: #e2e8f0; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
+        .msg-img { max-width: 100%; border-radius: 10px; margin-top: 8px; border: 1px solid #00f2fe; display: block; }
 
-        .voice-card { background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px; margin-top: 6px; display: flex; gap: 8px; }
-        .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px; font-size: 0.78rem; font-weight: bold; color: #000; cursor: pointer; }
-        .v-btn-copy { background: #1c243c; color: #00f2fe; border: 1px solid #4facfe; }
-        .v-btn-stop { flex: 0.4; background: #ff5252; color: #fff; }
+        .voice-card { background: rgba(0,242,254,0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 10px; margin-top: 8px; display: flex; gap: 8px; }
+        .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px; font-size: 0.8rem; font-weight: 700; color: #05070e; cursor: pointer; }
+        .v-btn-copy { background: #1a233a; color: #00f2fe; border: 1px solid #4facfe; }
+        .v-btn-stop { flex: 0.35; background: #ef4444; color: #fff; }
 
-        .img-preview-bar { display: none; align-items: center; gap: 8px; background: #121829; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.75rem; color: #00f2fe; }
-        .preview-thumb { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; }
-        .remove-img { cursor: pointer; color: #ff5252; margin-left: auto; font-weight: bold; }
+        .img-preview-bar { display: none; align-items: center; gap: 10px; background: #13192b; padding: 8px 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.78rem; color: #00f2fe; }
+        .preview-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; }
+        .remove-img { cursor: pointer; color: #ef4444; margin-left: auto; font-weight: 700; }
 
         .input-row { display: flex; gap: 8px; align-items: center; }
-        .chat-input { flex: 1; background: #090c15; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px; color: #fff; font-size: 0.82rem; outline: none; resize: none; height: 42px; }
-        .upload-label { background: #1c243c; border: 1px solid #4facfe; border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; flex-shrink: 0; }
-        .send-btn { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); border: none; border-radius: 10px; width: 44px; height: 42px; color: #000; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .chat-input { flex: 1; background: #070a14; border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; padding: 11px; color: #fff; font-size: 0.84rem; outline: none; resize: none; height: 44px; }
+        .chat-input:focus { border-color: #00f2fe; }
+        .upload-label { background: #161e33; border: 1px solid #4facfe; border-radius: 10px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.3rem; flex-shrink: 0; }
+        .send-btn { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); border: none; border-radius: 10px; width: 46px; height: 44px; color: #05070e; font-weight: 800; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     </style>
 </head>
 <body>
     <div class="glow-bg"></div>
     <header>
-        <div class="dev-gear" onclick="toggleModal()" title="AI Core Settings">⚙️ Settings</div>
+        <div class="dev-gear" onclick="toggleModal()" title="AI Core Settings">⚙️ API Settings</div>
         <h1 class="brand-title">AI 360</h1>
-        <p class="tagline">Neural Ecosystem Hub</p>
+        <p class="tagline">Next-Gen Neural Engine</p>
     </header>
 
     <div class="dev-modal" id="devModal">
         <div class="dev-modal-box">
             <div class="dev-modal-header">
-                <span>⚡ AI 360 Core Settings</span>
+                <span>⚡ AI 360 Neural Config</span>
                 <span style="cursor:pointer;" onclick="toggleModal()">✕</span>
             </div>
-            <label style="font-size:0.7rem; color:#8f9ca7;">💎 Gemini API Key:</label>
-            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste Gemini Key (AIzaSy...)">
-
-            <button class="save-btn" onclick="saveSettings()">Save & Close</button>
+            <label style="font-size:0.75rem; color:#94a3b8; font-weight:600;">💎 Gemini High-Speed API Key:</label>
+            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste your API key here">
+            <button class="save-btn" onclick="saveSettings()">Save & Activate</button>
         </div>
     </div>
 
     <div class="features-grid" id="grid">
         <div class="feature-card" onclick="openModule('study')">
             <div class="card-num">01</div>
-            <div class="card-icon">⚡</div>
+            <div class="card-icon">📚</div>
             <div class="card-info">
-                <h3>Study AI + Photo Solver 📸</h3>
-                <p>Step-by-step solutions & derivations</p>
+                <h3>Study AI + Deep Solver 📸</h3>
+                <p>Advanced derivations, step-by-step physics/math/chem</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('music')">
             <div class="card-num">02</div>
-            <div class="card-icon">🎵</div>
+            <div class="card-icon">🎙️</div>
             <div class="card-info">
-                <h3>AI Songwriter & Voice Reciter 🎙️</h3>
-                <p>Catchy Bollywood/Rap lyrics with audio</p>
+                <h3>Studio Songwriter & Vocalist 🎵</h3>
+                <p>Emotional Bollywood, Hip-Hop & Drill with audio recitation</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
             <div class="card-num">03</div>
-            <div class="card-icon">🎙️</div>
+            <div class="card-icon">🗣️</div>
             <div class="card-info">
-                <h3>Text to Voice AI</h3>
-                <p>Instant audio speech playback</p>
+                <h3>Text to Voice Studio</h3>
+                <p>Instant clear vocal voice synthesizer</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('imagestudio')">
             <div class="card-num">04</div>
             <div class="card-icon">🎨</div>
             <div class="card-info">
-                <h3>AI Image & Art Studio 🖼️</h3>
-                <p>Ultra-HD 3D, Ghibli & 3D Logo Maker</p>
+                <h3>Ultra-HD 3D Art Studio 🖼️</h3>
+                <p>Hyper-realistic 3D, Anime Ghibli & Sci-Fi 3D Logos</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
             <div class="card-num">05</div>
             <div class="card-icon">🎮</div>
             <div class="card-info">
-                <h3>Gaming Pro Mentor AI</h3>
-                <p>Tactics, loadouts & clutch strategies</p>
+                <h3>Pro Esports Mentor AI</h3>
+                <p>High-tier clutch mechanics, rotation & game sense</p>
             </div>
         </div>
     </div>
@@ -126,21 +128,21 @@
         <div class="panel-header">
             <h2 class="panel-title" id="panelTitle">Module Chat</h2>
             <div>
-                <span style="cursor:pointer; font-size:1.1rem; margin-right:10px;" onclick="toggleModal()" title="Settings">⚙️</span>
+                <span style="cursor:pointer; font-size:1.1rem; margin-right:12px;" onclick="toggleModal()" title="Settings">⚙️</span>
                 <button class="close-btn" onclick="closeModule()">✕</button>
             </div>
         </div>
         <div class="style-selector" id="styleSelector">
-            <button class="style-btn active" onclick="setArtStyle('realism', this)">🌟 Ultra 3D Realism</button>
-            <button class="style-btn" onclick="setArtStyle('ghibli', this)">🌸 Ghibli Cinematic</button>
-            <button class="style-btn" onclick="setArtStyle('logo', this)">🔮 3D Sci-Fi Logo</button>
+            <button class="style-btn active" onclick="setArtStyle('realism', this)">🌟 Ultra 3D Octane</button>
+            <button class="style-btn" onclick="setArtStyle('ghibli', this)">🌸 Ghibli Anime Studio</button>
+            <button class="style-btn" onclick="setArtStyle('logo', this)">🔮 3D Metallic Emblem</button>
         </div>
         <div class="chat-box" id="chatBox">
-            <div class="chat-msg msg-ai">👋 Welcome to AI 360! Ask your doubts or upload a photo.</div>
+            <div class="chat-msg msg-ai">⚡ AI 360 Core Online. Type your prompt or attach an image!</div>
         </div>
         <div class="img-preview-bar" id="imgPreviewBar">
             <img id="previewImg" class="preview-thumb">
-            <span id="imgName">Photo Attached</span>
+            <span id="imgName">Photo Loaded</span>
             <span class="remove-img" onclick="clearImage()">✕ Remove</span>
         </div>
         <div class="input-row">
@@ -148,11 +150,11 @@
                 📷
                 <input type="file" id="imgUpload" accept="image/*" style="display:none;" onchange="handleImage(event)">
             </label>
-            <textarea class="chat-input" id="userInput" placeholder="Type prompt here..." rows="1"></textarea>
+            <textarea class="chat-input" id="userInput" placeholder="Ask doubt, generate song, or describe art..." rows="1"></textarea>
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-    <script>
+        <script>
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'realism';
 
@@ -167,15 +169,15 @@
         function saveSettings() {
             localStorage.setItem('ai360_gemini', geminiEl.value.trim());
             toggleModal();
-            alert("✅ Settings saved successfully!");
+            alert("✅ API Settings Saved!");
         }
 
         const systemPrompts = {
-            study: "You are an expert professor. Solve math, physics, chemistry questions step-by-step with clear derivations and highlight final answers.",
-            music: "You are an elite Indian Bollywood/Rap Songwriter & Lyricist. Write 6-8 catchy, emotional, rhyming punchlines in Roman Hinglish. Deliver pure poetic vibes and punchy rhyming hooks without extra conversational disclaimers.",
+            study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and clearly box or highlight final answers.",
+            music: "You are an award-winning Indian Lyricist and Music Producer. Write high-energy, catchy, emotionally resonant lyrics (Hinglish/Hindi/English). Structure the output cleanly with [Hook], [Verse], and [Chorus] with exceptional rhythm, rhyme, and punchlines. Deliver pure artistic lyrics without conversational filler.",
             voice: "Text to voice engine.",
             imagestudio: "AI Image and Art Studio generator.",
-            gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
+            gaming: "You are a professional Tier-1 esports analyst and coach. Give precise, pro-level game sense breakdowns, clutch decision trees, sensitivity guides, weapon attachments, and optimal positioning strategies."
         };
 
         function openModule(mode) {
@@ -183,12 +185,12 @@
             stopAudio();
             document.getElementById('grid').style.display = 'none';
             document.getElementById('actionPanel').style.display = 'block';
-            document.getElementById('panelTitle').innerText = mode.toUpperCase() + " AI MODE";
+            document.getElementById('panelTitle').innerText = mode.toUpperCase() + " AI ENGINE";
             
             const styleSelector = document.getElementById('styleSelector');
             styleSelector.style.display = (mode === 'imagestudio') ? 'flex' : 'none';
 
-            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">Activated <b>${mode.toUpperCase()}</b> Mode. Type below or upload a photo!</div>`;
+            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Enter prompt or upload an image to begin!</div>`;
             clearImage();
         }
 
@@ -213,7 +215,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;
+                    const MAX_WIDTH = 1000;
                     const scale = MAX_WIDTH / img.width;
                     canvas.width = (img.width > MAX_WIDTH) ? MAX_WIDTH : img.width;
                     canvas.height = (img.width > MAX_WIDTH) ? (img.height * scale) : img.height;
@@ -221,7 +223,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.90);
                     currentImageBase64 = compressedDataUrl.split(',')[1];
                     document.getElementById('previewImg').src = compressedDataUrl;
                     document.getElementById('imgPreviewBar').style.display = 'flex';
@@ -279,12 +281,14 @@
         }
 
         function copyTxt(t) {
-            navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
+            navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
+        // Auto-fallback Gemini connection engine
         async function callGemini(geminiKey, text, isImage = false) {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-            
+            const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+            let lastError = null;
+
             let parts = [];
             if (isImage && currentImageBase64) {
                 parts.push({
@@ -295,20 +299,30 @@
                 });
             }
             parts.push({
-                text: `${systemPrompts[currentMode] || ""}\n\nPrompt: ${text || "Solve and explain step-by-step."}`
+                text: `${systemPrompts[currentMode] || ""}\n\nUser Query: ${text || "Process and analyze step-by-step."}`
             });
 
-            const res = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts }] })
-            });
+            for (const model of models) {
+                try {
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`;
+                    const res = await fetch(endpoint, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: [{ parts }] })
+                    });
 
-            const data = await res.json();
-            if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                return data.candidates[0].content.parts[0].text;
+                    const data = await res.json();
+                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                    if (data.error) {
+                        lastError = data.error.message;
+                    }
+                } catch (e) {
+                    lastError = e.message;
+                }
             }
-            throw new Error(data.error?.message || "Gemini Flash API request failed");
+            throw new Error(lastError || "Could not reach Gemini neural engine.");
         }
 
         async function sendMessage() {
@@ -319,7 +333,7 @@
             if (!text && !currentImageBase64) return;
 
             let userDisplay = text;
-            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Solve and analyze this image.");
+            if (currentImageBase64) userDisplay = `📷 [Image Attached]\n` + (text || "Solve and analyze this problem.");
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
@@ -327,9 +341,9 @@
             if (currentMode === 'voice') {
                 window.lastVoiceText = text;
                 appendMessage('ai', `
-                    <div>🗣️ <b>Speaking:</b> "${text}"</div>
+                    <div>🗣️ <b>Reciting:</b> "${text}"</div>
                     <div class="voice-card">
-                        <button class="v-btn" onclick="playSpeech(window.lastVoiceText)">🔊 Replay Voice</button>
+                        <button class="v-btn" onclick="playSpeech(window.lastVoiceText)">🔊 Replay Audio</button>
                         <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                     </div>
                 `, true);
@@ -337,30 +351,30 @@
                 return;
             }
 
-            // 2. Image Studio Mode (Pollinations AI)
+            // 2. High-Definition Art Studio Mode
             if (currentMode === 'imagestudio') {
-                const loadingMsg = appendMessage('ai', "✨ Rendering Artwork...");
+                const loadingMsg = appendMessage('ai', "🎨 Generating Studio Masterpiece...");
                 const seed = Math.floor(Math.random() * 9999999);
-                let promptText = text || "Cyberpunk futuristic city neon lighting";
+                let promptText = text || "Hyper-futuristic neon metropolis cyber architecture";
 
-                if (selectedArtStyle === 'realism') promptText += ", 8k resolution photorealistic octane render cinematic lighting";
-                else if (selectedArtStyle === 'ghibli') promptText += ", Studio Ghibli anime aesthetic, Hayao Miyazaki soft vibrant watercolor 8k";
-                else if (selectedArtStyle === 'logo') promptText += ", 3D minimalist metallic vector logo dark background 8k";
+                if (selectedArtStyle === 'realism') promptText += ", 8k resolution, octane render, photorealistic cinematic lighting, ultra-intricate details, raytracing";
+                else if (selectedArtStyle === 'ghibli') promptText += ", Studio Ghibli cinematic animation aesthetic, Hayao Miyazaki artwork, soft vibrant watercolor, masterwork 8k";
+                else if (selectedArtStyle === 'logo') promptText += ", Minimalist futuristic 3D emblem vector logo, glowing metallic finish, dark studio backdrop, 8k";
 
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=1024&seed=${seed}&nologo=true`;
+                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
 
                 const testImg = new Image();
                 testImg.onload = () => {
                     loadingMsg.innerHTML = `
-                        <div>🎨 <b>Artwork:</b></div>
+                        <div>✨ <b>Generated Artwork:</b></div>
                         <img src="${imgUrl}" class="msg-img">
-                        <div style="margin-top:8px;">
-                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:6px 14px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none; font-weight:bold;">🔍 View Full HD</a>
+                        <div style="margin-top:10px;">
+                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:8px 16px; background:#161e33; color:#00f2fe; border:1px solid #4facfe; border-radius:8px; font-size:0.78rem; text-decoration:none; font-weight:700;">🔍 View Full Resolution HD</a>
                         </div>
                     `;
                 };
                 testImg.onerror = () => {
-                    loadingMsg.innerText = "❌ Image generation failed. Please try another prompt.";
+                    loadingMsg.innerText = "❌ Image generation failed. Please try a different prompt.";
                 };
                 testImg.src = imgUrl;
 
@@ -368,15 +382,15 @@
                 return;
             }
 
-            // 3. AI Text, Math, Song & Vision (Gemini 1.5 Flash Engine)
+            // 3. Gemini High-Performance Solver & Lyricist
             if (!geminiKey) {
-                appendMessage('ai', "❌ API Key Missing! Please click ⚙️ Settings at top and paste your Gemini Key.");
+                appendMessage('ai', "❌ API Key Missing! Click ⚙️ API Settings at the top and paste your Gemini Key.");
                 toggleModal();
                 clearImage();
                 return;
             }
 
-            const aiMsgBox = appendMessage('ai', "⚡ Processing...");
+            const aiMsgBox = appendMessage('ai', "⚡ AI 360 Core Processing...");
 
             try {
                 const responseText = await callGemini(geminiKey, text, !!currentImageBase64);
@@ -384,10 +398,10 @@
                 if (currentMode === 'music') {
                     window.lastSong = responseText;
                     aiMsgBox.innerHTML = `
-                        <div>🎵 <b>Song Lyrics:</b><br><br>${responseText.replace(/\n/g, '<br>')}</div>
+                        <div>🎵 <b>Generated Track:</b><br><br>${responseText.replace(/\n/g, '<br>')}</div>
                         <div class="voice-card">
-                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Recite Lyrics</button>
-                            <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy</button>
+                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🎙️ Recite Vocals</button>
+                            <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy Lyrics</button>
                             <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                         </div>
                     `;
@@ -396,7 +410,7 @@
                     aiMsgBox.innerText = responseText;
                 }
             } catch (err) {
-                aiMsgBox.innerText = "❌ Error: " + err.message;
+                aiMsgBox.innerText = "❌ " + err.message;
             }
 
             clearImage();
@@ -404,5 +418,3 @@
     </script>
 </body>
 </html>
-
-
