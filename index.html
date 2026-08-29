@@ -162,7 +162,8 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-        <script>
+
+    <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
 
         const groqEl = document.getElementById('groqKey');
@@ -399,7 +400,7 @@
                 return;
             }
 
-            // --- Studio Ghibli Art Converter (Smart Vision Scan) ---
+            // --- Studio Ghibli Art Converter (Smart Vision Scan + Cel Painting) ---
             if (currentMode === 'ghibli') {
                 const loadingMsg = appendMessage('ai', "🌸 Analyzing photo & painting Ghibli art...");
                 
@@ -423,7 +424,7 @@
                 }
 
                 const seed = Math.floor(Math.random() * 9999999);
-                const ghibliPrompt = encodeURIComponent(`${imageDescription}, Studio Ghibli anime style, hand-drawn background, beautiful soft pastel watercolor aesthetic, Hayao Miyazaki masterpiece, highly detailed animation cell`);
+                const ghibliPrompt = encodeURIComponent(`A Studio Ghibli anime cel painting of: ${imageDescription}, Hayao Miyazaki art style, hand-drawn vintage anime aesthetic, soft watercolor gradients, cel-shaded animation, masterpiece`);
                 const imgUrl = `https://image.pollinations.ai/prompt/${ghibliPrompt}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
 
                 setTimeout(() => {
