@@ -148,9 +148,7 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-
-
-    <script>
+        <script>
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'ghibli';
 
@@ -320,45 +318,10 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // ⚡ Comprehensive 2.5 Dynamic & Static Discovery Core
+        // ⚡ Direct Gemini 3.6 Protocol Engine
         async function callNeuralCore(apiKey, text, isImage = false) {
             const cleanKey = apiKey.trim();
 
-            const candidateModels = [
-                "gemini-2.5-flash",
-                "gemini-2.5-pro",
-                "gemini-2.5-flash-latest",
-                "gemini-2.5-pro-latest",
-                "gemini-2.5-flash-lite",
-                "gemini-2.5-flash-001",
-                "gemini-2.5-pro-001"
-            ];
-
-            // 1. Live Google API Discovery
-            try {
-                const listRes = await fetch("https://generativelanguage.googleapis.com/v1beta/models", {
-                    method: "GET",
-                    headers: { "x-goog-api-key": cleanKey }
-                });
-                const listData = await listRes.json();
-                
-                if (listData.models && Array.isArray(listData.models)) {
-                    const available25 = listData.models
-                        .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
-                        .map(m => m.name.replace("models/", ""))
-                        .filter(m => m.includes("2.5"));
-
-                    if (available25.length > 0) {
-                        candidateModels.unshift(...available25);
-                    }
-                }
-            } catch (e) {
-                console.warn("Auto-discovery fallback active");
-            }
-
-            const uniqueModels = [...new Set(candidateModels)];
-
-            // 2. Build Payload
             let parts = [];
             if (isImage && currentImageBase64) {
                 parts.push({
@@ -372,35 +335,24 @@
                 text: `${systemPrompts[currentMode] || ""}\n\nTask: ${text || "Process and solve step-by-step."}`
             });
 
+            const endpoints = [
+                {
+                    url: "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+                    headers: { "Content-Type": "application/json", "x-goog-api-key": cleanKey }
+                },
+                {
+                    url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${cleanKey}`,
+                    headers: { "Content-Type": "application/json" }
+                }
+            ];
+
             let lastError = "";
 
-            // 3. Execution Pipeline (x-goog-api-key + URL Fallback)
-            for (const model of uniqueModels) {
+            for (const ep of endpoints) {
                 try {
-                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-                    const res = await fetch(endpoint, {
+                    const res = await fetch(ep.url, {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "x-goog-api-key": cleanKey
-                        },
-                        body: JSON.stringify({ contents: [{ parts }] })
-                    });
-
-                    const data = await res.json();
-                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                        return data.candidates[0].content.parts[0].text;
-                    }
-                    if (data.error) lastError = data.error.message;
-                } catch (e) {
-                    lastError = e.message;
-                }
-
-                try {
-                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
-                    const res = await fetch(endpoint, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: ep.headers,
                         body: JSON.stringify({ contents: [{ parts }] })
                     });
 
@@ -414,7 +366,7 @@
                 }
             }
 
-            throw new Error(lastError || "Neural core execution failed.");
+            throw new Error(lastError || "Neural core processing failed.");
         }
 
         async function sendMessage() {
@@ -429,7 +381,7 @@
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // 1. Precise Vision-to-Art Pipeline
+            // 1. Vision-to-Art Pipeline
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "🎨 Scanning your facial features & rendering Studio Art...");
                 const seed = Math.floor(Math.random() * 9999999);
@@ -518,4 +470,3 @@
     </script>
 </body>
 </html>
-
