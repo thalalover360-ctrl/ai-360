@@ -124,8 +124,8 @@
         </div>
     </div>
         <script>
-        // 🔒 PASTE YOUR GEMINI API KEY HERE (Inside quotes):
-        const LOCKED_API_KEY = "PASTE_YOUR_KEY_HERE";
+        // 🔒 Locked API Key Architecture
+        const LOCKED_API_KEY = "AQ.Ab8RN6JnMkkCkgvtBYnlujL02VXeo-OB9_ngfElVNkRoNA5IOQ";
 
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'ghibli';
@@ -320,7 +320,7 @@
                 const seed = Math.floor(Math.random() * 9999999);
                 let visualDescription = text;
 
-                if (currentImageBase64 && apiKey && apiKey !== "PASTE_YOUR_KEY_HERE") {
+                if (currentImageBase64 && apiKey) {
                     try {
                         visualDescription = await callNeuralCore(
                             apiKey,
@@ -365,12 +365,6 @@
             }
 
             // 2. Neural Core (Study, Music, Gaming)
-            if (!apiKey || apiKey === "PASTE_YOUR_KEY_HERE") {
-                appendMessage('ai', "❌ API Key Missing! Please replace PASTE_YOUR_KEY_HERE with your key in the script.");
-                clearImage();
-                return;
-            }
-
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 Core Processing...");
 
             try {
