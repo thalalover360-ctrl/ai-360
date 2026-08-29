@@ -111,7 +111,7 @@
         </div>
         <div class="feature-card" onclick="openModule('image3d')">
             <div class="card-num">04</div>
-            <div class="card-icon">🎨</div>
+            <div class="card-info">🎨</div>
             <div class="card-info">
                 <h3>3D Image Generator AI</h3>
                 <p>Hyper-realistic 3D renders & avatars</p>
@@ -119,7 +119,7 @@
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
             <div class="card-num">05</div>
-            <div class="card-icon">🎮</div>
+            <div class="card-info">🎮</div>
             <div class="card-info">
                 <h3>Gaming Pro Mentor AI</h3>
                 <p>Tactics, loadouts & clutch strategies</p>
@@ -152,8 +152,10 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-       <script>
+        <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [], audioCtx = null, beatInterval = null;
+        let cachedGroqModels = null;
+        
         const groqEl = document.getElementById('groqKey');
         const geminiEl = document.getElementById('geminiKey');
         const engineEl = document.getElementById('engineSelector');
@@ -171,6 +173,7 @@
             localStorage.setItem('ai360_groq', groqEl.value.trim());
             localStorage.setItem('ai360_gemini', geminiEl.value.trim());
             localStorage.setItem('ai360_pref_engine', engineEl.value);
+            cachedGroqModels = null;
             toggleModal();
             alert("✅ Keys updated successfully!");
         }
@@ -287,9 +290,23 @@
             throw new Error(lastErr || "Gemini Core Error");
         }
 
+        async function getAvailableGroqModels(groqKey) {
+            if (cachedGroqModels && cachedGroqModels.length > 0) return cachedGroqModels;
+            try {
+                const res = await fetch("https://api.groq.com/openai/v1/models", {
+                    headers: { "Authorization": `Bearer ${groqKey}` }
+                });
+                const data = await res.json();
+                if (data.data && Array.isArray(data.data)) {
+                    cachedGroqModels = data.data.map(m => m.id).filter(id => !id.includes("whisper") && !id.includes("guard"));
+                    if (cachedGroqModels.length > 0) return cachedGroqModels;
+                }
+            } catch(e) {}
+            return ["openai/gpt-oss-20b", "llama-3.3-70b-versatile", "openai/gpt-oss-120b"];
+        }
+
         async function callGroq(groqKey, text) {
-            // Updated directly to active models only
-            const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+            const models = await getAvailableGroqModels(groqKey);
             let lastErr = "";
             for (let m of models) {
                 try {
@@ -388,4 +405,3 @@
     </script>
 </body>
 </html>
-
