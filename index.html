@@ -42,7 +42,7 @@
 
         .voice-card { background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; border-radius: 10px; padding: 10px; margin-top: 6px; display: flex; flex-direction: column; gap: 8px; }
         .voice-btn-row { display: flex; gap: 8px; }
-        .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px 12px; font-size: 0.8rem; font-weight: bold; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 9px 12px; font-size: 0.82rem; font-weight: bold; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
         .v-btn-stop { flex: 0.4; background: #ff5252; color: #fff; }
 
         .img-preview-bar { display: none; align-items: center; gap: 8px; background: #121829; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.75rem; color: #00f2fe; }
@@ -98,8 +98,8 @@
             <div class="card-num">02</div>
             <div class="card-icon">🎵</div>
             <div class="card-info">
-                <h3>AI Songwriter & Vocal Reciter 🎙️</h3>
-                <p>Catchy Bollywood/Rap lyrics with instant crystal audio speech</p>
+                <h3>AI Songwriter & Voice Reciter 🎙️</h3>
+                <p>Catchy Bollywood/Rap lyrics with instant speech narration</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
@@ -107,12 +107,12 @@
             <div class="card-icon">🎙️</div>
             <div class="card-info">
                 <h3>Text to Voice AI (Instant Audio)</h3>
-                <p>100% Guaranteed loud speech playback for any text</p>
+                <p>Guaranteed speech playback engine</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('image3d')">
             <div class="card-num">04</div>
-            <div class="card-icon">🎨</div>
+            <div class="card-info">🎨</div>
             <div class="card-info">
                 <h3>3D Image Generator AI</h3>
                 <p>Hyper-realistic HD Flux renders & avatars</p>
@@ -156,8 +156,8 @@
         <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let cachedGroqModels = null;
-        let activeAudio = new Audio();
-        
+        let speechVoices = [];
+
         const groqEl = document.getElementById('groqKey');
         const geminiEl = document.getElementById('geminiKey');
         const engineEl = document.getElementById('engineSelector');
@@ -165,6 +165,16 @@
         groqEl.value = localStorage.getItem('ai360_groq') || '';
         geminiEl.value = localStorage.getItem('ai360_gemini') || '';
         engineEl.value = localStorage.getItem('ai360_pref_engine') || 'groq';
+
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                speechVoices = window.speechSynthesis.getVoices();
+            }
+        }
+        loadVoices();
+        if ('speechSynthesis' in window && window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
 
         function toggleModal() {
             const m = document.getElementById('devModal');
@@ -233,39 +243,46 @@
             return msg;
         }
 
-        // --- 100% Guaranteed Audio Playback (Native + Cloud TTS Fallback) ---
+        // --- Active Mobile Audio Unblocker & Voice Engine ---
         function playSpeech(txt) {
-            stopAudio();
+            if (!('speechSynthesis' in window)) {
+                alert("Speech not supported on this browser.");
+                return;
+            }
 
-            const cleanTxt = txt.replace(/[*#_`[\]]/g, '').replace(/Verse|Chorus|Hook|Bridge|Track Vibe/gi, '').trim().slice(0, 300);
+            window.speechSynthesis.cancel();
+            if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+
+            const cleanTxt = txt.replace(/[*#_`[\]]/g, '').replace(/Verse|Chorus|Hook|Bridge|Track Vibe/gi, '').trim().slice(0, 350);
             if (!cleanTxt) return;
 
-            // Strategy A: Direct Cloud Voice Stream (Loud & Native Indian Audio)
-            const encoded = encodeURIComponent(cleanTxt);
-            const cloudAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encoded}&tl=hi&client=tw-ob`;
+            const utterance = new SpeechSynthesisUtterance(cleanTxt);
+            utterance.rate = 0.95;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
 
-            activeAudio.src = cloudAudioUrl;
-            activeAudio.play().then(() => {
-                console.log("Cloud audio playing");
-            }).catch(() => {
-                // Strategy B: Browser Native Speech fallback on touch
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance(cleanTxt);
-                    utterance.rate = 0.95;
-                    const voices = window.speechSynthesis.getVoices();
-                    const indVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('IN'));
-                    if (indVoice) utterance.voice = indVoice;
-                    window.speechSynthesis.speak(utterance);
+            if (speechVoices.length === 0) speechVoices = window.speechSynthesis.getVoices();
+            const indVoice = speechVoices.find(v => v.lang === 'hi-IN' || v.lang === 'en-IN' || v.name.includes('India') || v.name.includes('Hindi'));
+            if (indVoice) {
+                utterance.voice = indVoice;
+                utterance.lang = indVoice.lang;
+            } else {
+                utterance.lang = 'en-US';
+            }
+
+            // Fix for Android Chrome silence/freeze
+            window.speechSynthesis.speak(utterance);
+            const keepAlive = setInterval(() => {
+                if (!window.speechSynthesis.speaking) {
+                    clearInterval(keepAlive);
+                } else {
+                    window.speechSynthesis.pause();
+                    window.speechSynthesis.resume();
                 }
-            });
+            }, 10000);
         }
 
         function stopAudio() {
-            if (activeAudio) {
-                activeAudio.pause();
-                activeAudio.currentTime = 0;
-            }
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
             }
@@ -359,16 +376,16 @@
             inputEl.value = "";
 
             if (currentMode === 'voice') {
-                const voiceMsg = appendMessage('ai', `
+                window.lastVoiceText = text;
+                appendMessage('ai', `
                     <div>🗣️ Text Ready for Voice: "${text}"</div>
                     <div class="voice-card">
                         <div class="voice-btn-row">
-                            <button class="v-btn" onclick="playSpeech('${text.replace(/'/g, "\\'")}')">🔊 Play Voice Now</button>
+                            <button class="v-btn" onclick="playSpeech(window.lastVoiceText)">🔊 Speak Voice Now</button>
                             <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                         </div>
                     </div>
                 `, true);
-                playSpeech(text);
                 return;
             }
 
@@ -430,3 +447,4 @@
     </script>
 </body>
 </html>
+
