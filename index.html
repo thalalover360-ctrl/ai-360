@@ -14,7 +14,7 @@
         .brand-title { font-family: 'Orbitron', sans-serif; font-size: 2.3rem; font-weight: 900; letter-spacing: 1px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #8a2be2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .tagline { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 3px; margin-top: 3px; font-weight: 600; }
 
-        /* Main Page Direct Key Space */
+        /* Direct API Key Container */
         .key-container { width: 100%; max-width: 520px; background: rgba(12,18,34,0.9); border: 1px solid rgba(0,242,254,0.3); border-radius: 14px; padding: 12px 14px; margin-bottom: 20px; z-index: 1; box-shadow: 0 0 20px rgba(0,242,254,0.1); }
         .key-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.76rem; font-weight: 700; color: #00f2fe; }
         .key-input-row { display: flex; gap: 8px; }
@@ -72,7 +72,7 @@
         <p class="tagline">Next-Gen Multi-Modal Neural Hub</p>
     </header>
 
-    <!-- Main Page Direct API Space -->
+    <!-- Direct API Key Space -->
     <div class="key-container" id="keyContainer">
         <div id="keyInputMode">
             <div class="key-header-row">
@@ -155,7 +155,7 @@
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'ghibli';
 
-        // Direct Main-Page Key Management
+        // Direct Main-Page Key Management & Auto-Lock
         function initKeySystem() {
             const savedKey = localStorage.getItem('ai360_user_key') || '';
             const inputMode = document.getElementById('keyInputMode');
@@ -192,7 +192,6 @@
             return localStorage.getItem('ai360_user_key') || '';
         }
 
-        // Initialize on load
         window.addEventListener('DOMContentLoaded', initKeySystem);
 
         const systemPrompts = {
@@ -322,14 +321,35 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // Multi-Model Fallback Engine
+        // Dynamic Model Resolver (Prevents 404 Model Not Found Errors)
+        async function getSupportedModel(apiKey) {
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                const data = await res.json();
+                if (data.models && data.models.length > 0) {
+                    const usable = data.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
+                    const preferred = usable.find(m => m.name.includes("flash") || m.name.includes("pro"));
+                    if (preferred) return preferred.name.replace("models/", "");
+                    if (usable.length > 0) return usable[0].name.replace("models/", "");
+                }
+            } catch (e) {
+                // Ignore and use default fallback list
+            }
+            return "gemini-2.5-flash";
+        }
+
+        // Multi-Tier Auto Fallback Engine
         async function callNeuralCore(apiKey, text, isImage = false) {
+            const dynamicModel = await getSupportedModel(apiKey);
             const candidateModels = [
+                dynamicModel,
                 "gemini-2.5-flash",
+                "gemini-2.5-pro",
                 "gemini-2.0-flash",
-                "gemini-2.0-flash-exp",
-                "gemini-1.5-flash"
+                "gemini-2.0-flash-exp"
             ];
+
+            const uniqueCandidates = [...new Set(candidateModels)];
 
             let parts = [];
             if (isImage && currentImageBase64) {
@@ -346,7 +366,7 @@
 
             let lastError = "";
 
-            for (const model of candidateModels) {
+            for (const model of uniqueCandidates) {
                 try {
                     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
                     const res = await fetch(endpoint, {
@@ -382,7 +402,7 @@
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // 1. Precise Vision-to-Art Pipeline (Exact Beard, Pose, Clothes)
+            // 1. Precise Vision-to-Art Pipeline
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "🎨 Scanning your facial features & rendering Studio Art...");
                 const seed = Math.floor(Math.random() * 9999999);
