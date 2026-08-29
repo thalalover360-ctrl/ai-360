@@ -116,7 +116,7 @@
             <div class="card-icon">🌸</div>
             <div class="card-info">
                 <h3>Studio Ghibli Art Converter 🎨</h3>
-                <p>Convert photos into magical anime art</p>
+                <p>Convert photos into magical modern anime art</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('logo3d')">
@@ -162,8 +162,7 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-
-    <script>
+        <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
 
         const groqEl = document.getElementById('groqKey');
@@ -400,9 +399,9 @@
                 return;
             }
 
-            // --- Studio Ghibli Art Converter (Smart Vision Scan + Cel Painting) ---
+            // --- Studio Ghibli Art Converter (Modern Clean Digital Anime Style) ---
             if (currentMode === 'ghibli') {
-                const loadingMsg = appendMessage('ai', "🌸 Analyzing photo & painting Ghibli art...");
+                const loadingMsg = appendMessage('ai', "🌸 Analyzing photo & painting modern Ghibli art...");
                 
                 let imageDescription = text || "A person portrait";
                 if (geminiKey && currentImageBase64) {
@@ -424,12 +423,12 @@
                 }
 
                 const seed = Math.floor(Math.random() * 9999999);
-                const ghibliPrompt = encodeURIComponent(`A Studio Ghibli anime cel painting of: ${imageDescription}, Hayao Miyazaki art style, hand-drawn vintage anime aesthetic, soft watercolor gradients, cel-shaded animation, masterpiece`);
+                const ghibliPrompt = encodeURIComponent(`Modern Studio Ghibli 3D anime style portrait of: ${imageDescription}, vibrant clean digital art, Makoto Shinkai and modern anime aesthetic, smooth smooth shading, high quality digital render, beautiful lighting`);
                 const imgUrl = `https://image.pollinations.ai/prompt/${ghibliPrompt}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
 
                 setTimeout(() => {
                     loadingMsg.innerHTML = `
-                        <div>🌸 <b>Ghibli Art Converted from your Photo:</b></div>
+                        <div>🌸 <b>Modern Ghibli Art Converted from your Photo:</b></div>
                         <img src="${imgUrl}" class="msg-img">
                         <div style="margin-top:6px;">
                             <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full Ghibli Art</a>
@@ -504,4 +503,3 @@
     </script>
 </body>
 </html>
-
