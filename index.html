@@ -300,7 +300,13 @@
                     }
                 });
             }
-            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}` });
+            
+            let promptText = `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}`;
+            if (currentMode === 'ghibli') {
+                promptText = `Transform this attached photo into a magical Studio Ghibli hand-drawn anime art painting style, Hayao Miyazaki aesthetic, beautiful soft watercolor background, highly detailed animation cell.`;
+            }
+
+            parts.push({ text: promptText });
 
             const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-2.0-flash"];
             let lastErr = "";
