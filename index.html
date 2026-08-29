@@ -124,7 +124,7 @@
         </div>
     </div>
         <script>
-        // 🔒 Locked API Key Architecture
+        // 🔒 Permanent / Dual Auth Key Container
         const LOCKED_API_KEY = "AQ.Ab8RN6JnMkkCkgvtBYnlujL02VXeo-OB9_ngfElVNkRoNA5IOQ";
 
         let currentMode = "", currentImageBase64 = null;
@@ -207,7 +207,7 @@
             return msg;
         }
 
-        // 🎙️ Deep Male Vocal Synthesizer (Strict Male Voice, Clean Recitation)
+        // 🎙️ Deep Male Vocal Synthesizer (Strict Male Voice, No Punctuation)
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -255,14 +255,17 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // Robust Direct Fallback Chain
-        async function callNeuralCore(apiKey, text, isImage = false) {
-            const candidateEndpoints = [
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`,
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-                `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`
-            ];
+        // Dual-Engine Authentication Core
+        async function callNeuralCore(tokenOrKey, text, isImage = false) {
+            const cleanToken = tokenOrKey.trim();
+            const isBearer = cleanToken.startsWith("AQ.") || cleanToken.startsWith("ya29.");
+
+            const headers = { "Content-Type": "application/json" };
+            if (isBearer) {
+                headers["Authorization"] = `Bearer ${cleanToken}`;
+            }
+
+            const candidateModels = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"];
 
             let parts = [];
             if (isImage && currentImageBase64) {
@@ -279,11 +282,15 @@
 
             let lastError = "";
 
-            for (const endpoint of candidateEndpoints) {
+            for (const model of candidateModels) {
+                const endpoint = isBearer 
+                    ? `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+                    : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanToken}`;
+
                 try {
                     const res = await fetch(endpoint, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: headers,
                         body: JSON.stringify({ contents: [{ parts }] })
                     });
 
@@ -299,7 +306,7 @@
                 }
             }
 
-            throw new Error(lastError || "Neural core processing failed.");
+            throw new Error(lastError || "Neural core execution failed.");
         }
 
         async function sendMessage() {
@@ -314,9 +321,9 @@
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // 1. Precise Vision-to-Art Pipeline (Exact Facial Hair, Outfit & Pose)
+            // 1. Precise Vision-to-Art Pipeline
             if (currentMode === 'imagestudio') {
-                const loadingMsg = appendMessage('ai', "🎨 Scanning your facial features & rendering Studio Art...");
+                const loadingMsg = appendMessage('ai', "🎨 Scanning facial features & rendering Studio Art...");
                 const seed = Math.floor(Math.random() * 9999999);
                 let visualDescription = text;
 
@@ -364,7 +371,7 @@
                 return;
             }
 
-            // 2. Neural Core (Study, Music, Gaming)
+            // 2. Neural Core Engine
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 Core Processing...");
 
             try {
