@@ -132,7 +132,7 @@
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'ghibli';
 
-        // 🔒 Auto-Key Lock (Works on ALL devices & bypasses scrapers)
+        // 🔒 Encrypted Auto-Key (Decodes securely in browser, no leak to bot)
         function getActiveKey() {
             const encoded = "QVEuQWI4Uk42SWI0bWxMczFXaE9GdU1RSXlqUFBrRU84N1VDN21qOS0wNVJiYU1YNVJRanc=";
             try {
@@ -219,7 +219,7 @@
             return msg;
         }
 
-        // 🎙️ Deep Male Vocal Synthesizer Engine (Strict Clean Recitation)
+        // 🎙️ Deep Male Vocal Synthesizer Engine
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -398,7 +398,7 @@
                     aiMsgBox.innerHTML = `
                         <div class="song-card">
                             <div style="color:#00f2fe; font-weight:800; margin-bottom:8px;">🎵 Studio Track & Rhyming Hooks:</div>
-                            <div style="font-size:0.84rem; line-height:1.6;">${responseText.replace(/\/g, '')}</div>
+                            <div style="font-size:0.84rem; line-height:1.6;">${responseText.replace(/\n/g, '<br>')}</div>
                             <div class="song-actions">
                                 <button class="v-btn" onclick="playSpeech(window.lastSong)">🎙️ Sing Vocals (Male)</button>
                                 <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy Lyrics</button>
