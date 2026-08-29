@@ -18,7 +18,7 @@
         .dev-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .dev-modal-box { background: #0c101d; border: 1px solid #00f2fe; border-radius: 16px; padding: 20px; width: 100%; max-width: 420px; box-shadow: 0 0 35px rgba(0,242,254,0.25); }
         .dev-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-family: 'Orbitron', sans-serif; color: #00f2fe; font-size: 0.95rem; }
-        .dev-input { width: 100%; background: #05070e; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 10px 12px; color: #00f2fe; font-size: 0.8rem; margin-top: 6px; margin-bottom: 14px; outline: none; }
+        .dev-input { width: 100%; background: #05070e; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 10px 12px; color: #00f2fe; font-size: 0.8rem; margin-top: 6px; margin-bottom: 14px; outline: none; transition: 0.2s; }
         .dev-input:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0,242,254,0.3); }
         .save-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; width: 100%; color: #05070e; font-size: 0.85rem; }
 
@@ -154,8 +154,7 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-
-    <script>
+        <script>
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'realism';
 
@@ -170,12 +169,12 @@
         function saveSettings() {
             localStorage.setItem('ai360_core_key', coreEl.value.trim());
             toggleModal();
-            alert("✅ Access Key Saved!");
+            alert("✅ Neural Core Key Saved!");
         }
 
         const systemPrompts = {
-            study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and clearly highlight final answers.",
-            music: "You are an award-winning Indian Lyricist and Music Producer. Write catchy, emotional, rhyming punchlines in Roman Hinglish. Structure cleanly with [Hook] and [Verse]. Deliver pure musical vibes without conversational filler.",
+            study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and highlight final answers.",
+            music: "You are an elite award-winning Indian Music Producer and Lyricist. Write original, high-energy, catchy, and melodic verses/hooks in Roman Hinglish. Ensure perfect rhythmic flow and rhyming punchlines. Return purely creative original lyrics without conversational meta text.",
             voice: "Text to voice engine.",
             imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are a professional Tier-1 esports coach. Give precise clutch decision trees, sensitivity guides, weapon attachments, and optimal positioning strategies."
@@ -191,7 +190,7 @@
             const styleSelector = document.getElementById('styleSelector');
             styleSelector.style.display = (mode === 'imagestudio') ? 'flex' : 'none';
 
-            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Type below or upload a photo!</div>`;
+            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Enter prompt or upload an image!</div>`;
             clearImage();
         }
 
@@ -266,8 +265,13 @@
             if (!cleanTxt) return;
 
             const u = new SpeechSynthesisUtterance(cleanTxt);
-            u.rate = 0.95;
-            u.pitch = 1.0;
+            if (currentMode === 'music') {
+                u.rate = 1.05;
+                u.pitch = 1.15;
+            } else {
+                u.rate = 0.95;
+                u.pitch = 1.0;
+            }
             u.lang = 'hi-IN';
 
             const voices = window.speechSynthesis.getVoices();
@@ -285,7 +289,7 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // Multi-Tier Fallback Engine (3.5 Flash -> 3.0 Flash -> 2.5 Flash -> 2.0 Flash)
+        // Multi-Model Fallback Engine (2.0 to 3.5 Models)
         async function callNeuralCore(apiKey, text, isImage = false) {
             const candidateModels = [
                 "gemini-3.5-flash",
@@ -305,7 +309,7 @@
                 });
             }
             parts.push({
-                text: `${systemPrompts[currentMode] || ""}\n\nTask: ${text || "Process and analyze step-by-step."}`
+                text: `${systemPrompts[currentMode] || ""}\n\nTask/Prompt: ${text || "Analyze and solve step-by-step."}`
             });
 
             let lastError = "";
@@ -331,7 +335,7 @@
                 }
             }
 
-            throw new Error(lastError || "Neural core execution failed. Please verify your access key.");
+            throw new Error(lastError || "Neural core connection failed. Please verify your access key.");
         }
 
         async function sendMessage() {
@@ -360,17 +364,21 @@
                 return;
             }
 
-            // 2. High-Definition Art Studio Mode
+            // 2. High-Definition Art Studio Mode (Targeted Flux Engine)
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "🎨 Rendering Ultra-HD Artwork...");
                 const seed = Math.floor(Math.random() * 9999999);
-                let promptText = text || "Futuristic digital art";
+                let promptText = text || "peaceful natural scenery";
 
-                if (selectedArtStyle === 'realism') promptText += ", 8k resolution, hyper-realistic 3d octane render, cinematic lighting, raytracing";
-                else if (selectedArtStyle === 'ghibli') promptText += ", Studio Ghibli anime aesthetic, Hayao Miyazaki artwork, vibrant watercolor, 8k";
-                else if (selectedArtStyle === 'logo') promptText += ", 3D futuristic minimalist metallic emblem logo, dark background, 8k";
+                if (selectedArtStyle === 'realism') {
+                    promptText = `${promptText}, photorealistic 8k octane render, cinematic lighting, ultra-detailed textures, masterwork`;
+                } else if (selectedArtStyle === 'ghibli') {
+                    promptText = `${promptText}, in the style of Studio Ghibli, Hayao Miyazaki anime aesthetic, 2D hand-drawn cel animation, gouache painted background, soft pastel colors, whimsical nostalgic atmosphere, 8k`;
+                } else if (selectedArtStyle === 'logo') {
+                    promptText = `3D futuristic minimal emblem logo for ${promptText}, metallic chrome neon finish, dark clean background, 8k vector`;
+                }
 
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
+                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true&enhance=true`;
 
                 const testImg = new Image();
                 testImg.onload = () => {
@@ -378,12 +386,12 @@
                         <div>✨ <b>Generated Artwork:</b></div>
                         <img src="${imgUrl}" class="msg-img">
                         <div style="margin-top:10px;">
-                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:8px 16px; background:#161e33; color:#00f2fe; border:1px solid #4facfe; border-radius:8px; font-size:0.78rem; text-decoration:none; font-weight:700;">🔍 View Full Resolution HD</a>
+                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:8px 16px; background:#161e33; color:#00f2fe; border:1px solid #4facfe; border-radius:8px; font-size:0.78rem; text-decoration:none; font-weight:700;">🔍 View Full HD</a>
                         </div>
                     `;
                 };
                 testImg.onerror = () => {
-                    loadingMsg.innerText = "❌ Image generation failed. Please try a different prompt.";
+                    loadingMsg.innerText = "❌ Image generation failed. Please try another prompt.";
                 };
                 testImg.src = imgUrl;
 
@@ -399,7 +407,7 @@
                 return;
             }
 
-            const aiMsgBox = appendMessage('ai', "⚡ AI 360 Core Processing...");
+            const aiMsgBox = appendMessage('ai', "⚡ Neural Core Processing...");
 
             try {
                 const responseText = await callNeuralCore(apiKey, text, !!currentImageBase64);
@@ -427,5 +435,4 @@
     </script>
 </body>
 </html>
-
 
