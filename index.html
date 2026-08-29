@@ -33,15 +33,15 @@
         .panel-title { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #00f2fe; }
         .close-btn { background: none; border: none; color: #8f9ca7; font-size: 1.2rem; cursor: pointer; }
         
-        .style-selector { display: none; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-        .style-btn { background: #1c243c; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; color: #fff; cursor: pointer; }
-        .style-btn.active { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #000; font-weight: bold; border-color: #00f2fe; }
-
         .chat-box { width: 100%; height: 320px; background: #090c15; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
         .chat-msg { max-width: 90%; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
         .msg-user { align-self: flex-end; background: linear-gradient(135deg, #0052d4, #4364f7); color: #fff; border-bottom-right-radius: 2px; }
         .msg-ai { align-self: flex-start; background: #182035; color: #d0f4fc; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #00f2fe; }
+
+        .style-selector { display: none; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+        .style-btn { background: #1c243c; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; color: #fff; cursor: pointer; }
+        .style-btn.active { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #000; font-weight: bold; border-color: #00f2fe; }
 
         .voice-card { background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px; margin-top: 6px; display: flex; gap: 8px; }
         .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px; font-size: 0.78rem; font-weight: bold; color: #000; cursor: pointer; }
@@ -73,10 +73,10 @@
                 <span style="cursor:pointer;" onclick="toggleModal()">✕</span>
             </div>
             <label style="font-size:0.7rem; color:#8f9ca7;">⚡ Primary LPU Key (Groq):</label>
-            <input type="password" id="groqKey" class="dev-input" placeholder="Paste Groq Key (gsk_...)">
+            <input type="password" id="groqKey" class="dev-input" placeholder="Paste gsk_ key">
             
             <label style="font-size:0.7rem; color:#8f9ca7;">💎 Vision Core Key (Gemini):</label>
-            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste Gemini Key">
+            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste AIza key">
 
             <button class="save-btn" onclick="saveSettings()">Save & Close</button>
         </div>
@@ -112,7 +112,7 @@
             <div class="card-icon">🎨</div>
             <div class="card-info">
                 <h3>AI Image & Art Studio 🖼️</h3>
-                <p>Ultra-HD 3D, Ghibli & 3D Logo Maker</p>
+                <p>Ultra-HD 3D, Ghibli Photo Filter & Logo Maker</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
@@ -179,7 +179,7 @@
 
         const systemPrompts = {
             study: "You are an expert professor. Solve math, physics, chemistry questions step-by-step with clear derivations and highlight final answers.",
-            music: "You are an elite Indian Bollywood/Rap Songwriter & Lyricist. Write 6-8 catchy, emotional, rhyming punchlines in Roman Hinglish. Deliver pure poetic vibes and punchy rhyming hooks without extra conversational disclaimers.",
+            music: "You are an Indian Rap/Pop Songwriter. Write ONLY 4-6 catchy rhyming punchlines in Roman Hinglish. Do NOT write disclaimers or markdown symbols.",
             voice: "Text to voice engine.",
             imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
@@ -232,7 +232,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
                     currentImageBase64 = compressedDataUrl.split(',')[1];
                     document.getElementById('previewImg').src = compressedDataUrl;
                     document.getElementById('imgPreviewBar').style.display = 'flex';
@@ -296,68 +296,78 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
         }
 
-        async function callGroqVision(groqKey, text) {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json", 
-                    "Authorization": `Bearer ${groqKey}` 
-                },
-                body: JSON.stringify({
-                    model: "llama-3.2-11b-vision-preview",
-                    messages: [
-                        { role: "system", content: systemPrompts[currentMode] },
-                        {
-                            role: "user",
-                            content: [
-                                { type: "text", text: text || "Solve and analyze this step-by-step." },
-                                { type: "image_url", image_url: { url: `data:image/jpeg;base64,${currentImageBase64}` } }
-                            ]
-                        }
-                    ]
-                })
-            });
-            const data = await response.json();
-            if (data.choices && data.choices[0]?.message?.content) {
-                return data.choices[0].message.content;
+        async function callGemini(geminiKey, text) {
+            const parts = [];
+            if (currentImageBase64) {
+                parts.push({
+                    inline_data: {
+                        mime_type: "image/jpeg",
+                        data: currentImageBase64
+                    }
+                });
             }
-            throw new Error(data.error?.message || "Groq Vision Processing Failed");
+            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}` });
+
+            const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-2.0-flash"];
+            let lastErr = "";
+
+            for (let m of targetModels) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${geminiKey}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: [{ parts }] })
+                    });
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                    if (data.error?.message) lastErr = data.error.message;
+                } catch (e) {
+                    lastErr = e.message;
+                }
+            }
+            throw new Error(lastErr || "Gemini API Error");
         }
 
         async function callGroqText(groqKey, text) {
-            try {
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json", 
-                        "Authorization": `Bearer ${groqKey}` 
-                    },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [
-                            { role: "system", content: systemPrompts[currentMode] },
-                            ...chatHistory,
-                            { role: "user", content: text }
-                        ]
-                    })
-                });
-                const data = await response.json();
-                if (data.choices && data.choices[0]?.message?.content) {
-                    return data.choices[0].message.content;
+            const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+            let lastErr = "";
+            for (let m of models) {
+                try {
+                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqKey}` },
+                        body: JSON.stringify({
+                            model: m,
+                            messages: [
+                                { role: "system", content: systemPrompts[currentMode] },
+                                ...chatHistory,
+                                { role: "user", content: text }
+                            ]
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.choices && data.choices[0]?.message?.content) {
+                        return data.choices[0].message.content;
+                    }
+                    if (data.error?.message) lastErr = data.error.message;
+                } catch (e) {
+                    lastErr = e.message;
                 }
-                throw new Error(data.error?.message || "Groq Text Generation Failed");
-            } catch (e) {
-                throw new Error(e.message || "Groq Text Error");
             }
+            throw new Error(lastErr || "Groq Text Error");
         }
-                    async function sendMessage() {
+
+        async function sendMessage() {
             const inputEl = document.getElementById('userInput');
             const text = inputEl.value.trim();
             const groqKey = groqEl.value.trim();
+            const geminiKey = geminiEl.value.trim();
             if (!text && !currentImageBase64) return;
 
             let userDisplay = text;
-            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Solve and analyze this image.");
+            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Process attached media.");
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
@@ -374,51 +384,66 @@
                 return;
             }
 
-            // --- AI Image & Art Studio (Flux Engine) ---
+            // --- Unified AI Image & Art Studio ---
             if (currentMode === 'imagestudio') {
-                const loadingMsg = appendMessage('ai', "✨ Rendering Ultra-HD Masterpiece...");
+                const loadingMsg = appendMessage('ai', "✨ Processing Masterpiece Render (Ultra-HD Flux Engine)...");
                 
+                let imageDescription = text || "A high quality artistic composition";
+                if (geminiKey && currentImageBase64) {
+                    try {
+                        const parts = [
+                            { inline_data: { mime_type: "image/jpeg", data: currentImageBase64 } },
+                            { text: "Describe the exact subject, human pose, clothes, expression, and environment in this photo in detail, in short English text." }
+                        ];
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${geminiKey}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ contents: [{ parts }] })
+                        });
+                        const data = await res.json();
+                        if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                            imageDescription = data.candidates[0].content.parts[0].text;
+                        }
+                    } catch (e) {}
+                }
+
                 const seed = Math.floor(Math.random() * 9999999);
                 let finalPrompt = "";
-                let userPromptText = text || "Artistic portrait";
 
                 if (selectedArtStyle === 'realism') {
-                    finalPrompt = encodeURIComponent(`${userPromptText}, hyper-realistic 3d octane render, unreal engine 5, ray tracing, cinematic lighting, 8k resolution, photorealistic details`);
+                    finalPrompt = encodeURIComponent(`Photorealistic portrait of: ${imageDescription}, hyper-realistic skin texture, natural lighting, cinematic octane render, 8k resolution, masterpiece`);
                 } else if (selectedArtStyle === 'ghibli') {
-                    finalPrompt = encodeURIComponent(`Detailed realistic human features of: ${userPromptText}, seamlessly blended into a breathtaking modern Studio Ghibli cinematic scenery, Hayao Miyazaki aesthetic background, soft watercolor gradients, magical atmosphere, 8k resolution`);
+                    finalPrompt = encodeURIComponent(`Photorealistic face and realistic human features of: ${imageDescription}, set inside a breathtaking Studio Ghibli cinematic painted scenery, Hayao Miyazaki aesthetic background, soft watercolor gradients, magical atmosphere, 8k`);
                 } else if (selectedArtStyle === 'logo') {
-                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${userPromptText}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
+                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${text || imageDescription}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
                 }
 
                 const imgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1024&height=1024&model=flux-realism&seed=${seed}&nologo=true&enhance=true`;
 
                 setTimeout(() => {
                     loadingMsg.innerHTML = `
-                        <div>🎨 <b>Generated Masterpiece:</b></div>
+                        <div>🎨 <b>Generated Studio Masterpiece:</b></div>
                         <img src="${imgUrl}" class="msg-img">
                         <div style="margin-top:6px;">
                             <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full HD Image</a>
                         </div>
                     `;
                 }, 1000);
-                clearImage();
                 return;
             }
 
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is processing...");
             let responseText = "", success = false, errorMsg = "";
 
-            // Vision Processing (Photo Solver) via Groq Vision
-            if (currentImageBase64 && groqKey) {
+            if (geminiKey) {
                 try {
-                    responseText = await callGroqVision(groqKey, text);
+                    responseText = await callGemini(geminiKey, text);
                     success = true;
                 } catch (err) {
-                    errorMsg = "Vision Error: " + err.message;
+                    errorMsg = "Gemini: " + err.message;
                 }
             }
 
-            // High-Speed Text Processing via Groq LPU (Llama 3.3 70B)
             if (!success && !currentImageBase64 && groqKey) {
                 try {
                     responseText = await callGroqText(groqKey, text);
@@ -426,7 +451,7 @@
                     chatHistory.push({ role: "assistant", content: responseText });
                     success = true;
                 } catch (err) {
-                    errorMsg = "Groq LPU Error: " + err.message;
+                    errorMsg += " | Groq: " + err.message;
                 }
             }
 
@@ -434,9 +459,9 @@
                 if (currentMode === 'music') {
                     window.lastSong = responseText;
                     aiMsgBox.innerHTML = `
-                        <div>🎵 <b>AI Songwriter Lyrics:</b><br><br>${responseText.replace(/\n/g, '<br>')}</div>
+                        <div>${responseText.replace(/\n/g, '<br>')}</div>
                         <div class="voice-card">
-                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Recite Song</button>
+                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Speak Song</button>
                             <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy</button>
                             <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                         </div>
@@ -446,7 +471,7 @@
                     aiMsgBox.innerText = responseText;
                 }
             } else {
-                aiMsgBox.innerText = "❌ " + (errorMsg || "Please enter your Groq API Key in ⚙️ Settings.");
+                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue. Check ⚙️ Settings.");
             }
             clearImage();
         }
