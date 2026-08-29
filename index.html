@@ -67,25 +67,25 @@
         </div>
         <div class="api-group">
             <div class="api-label">
-                <span>💎 Gemini Auth Key (Photo Doubts):</span>
+                <span>💎 Gemini Key (AQ Auth & Photo Doubts):</span>
                 <span style="color:#00f2fe; font-size:0.68rem;">Auto-Saved</span>
             </div>
             <input type="password" id="geminiKey" class="api-input" placeholder="Paste AQ... or AIza... key">
         </div>
         <select id="engineSelector" class="model-select">
-            <option value="groq">⚡ Groq: Llama 3.1 Instant (Ultra Fast Speed)</option>
-            <option value="gemini">💎 Gemini Engine (Photo Doubts & Music Producer)</option>
+            <option value="groq">⚡ Groq Engine (Ultra Fast LPU)</option>
+            <option value="gemini">💎 Gemini Engine (Photo Doubts + Deep AI)</option>
         </select>
     </div>
 
-    <!-- Features -->
+    <!-- Modules -->
     <div class="features-grid" id="grid">
         <div class="feature-card" onclick="openModule('study')">
             <div class="card-num">01</div>
             <div class="card-icon">⚡</div>
             <div class="card-info">
                 <h3>Study AI + Photo Solver 📸</h3>
-                <p>Interactive chat, JEE doubts & step derivations</p>
+                <p>Step-by-step solutions & derivation tutor</p>
             </div>
         </div>
 
@@ -103,7 +103,7 @@
             <div class="card-icon">🎙️</div>
             <div class="card-info">
                 <h3>Text to Voice AI</h3>
-                <p>Lifelike dynamic speech & audio</p>
+                <p>Lifelike dynamic speech & instant audio</p>
             </div>
         </div>
 
@@ -126,7 +126,7 @@
         </div>
     </div>
 
-    <!-- Active Chat Modal -->
+    <!-- Chat Modal -->
     <div class="action-panel" id="actionPanel">
         <div class="panel-header">
             <h2 class="panel-title" id="panelTitle">Module Chat</h2>
@@ -171,7 +171,7 @@
         engineEl.addEventListener('change', (e) => localStorage.setItem('ai360_pref_engine', e.target.value));
 
         const systemPrompts = {
-            study: "You are an elite professor and interactive tutor. Provide clear step-by-step mathematical & conceptual solutions, explain every formula, and solve doubts from images accurately.",
+            study: "You are an elite professor and interactive tutor. Provide concise step-by-step mathematical & conceptual solutions, explain every formula, and solve doubts from images accurately.",
             music: "You are a professional music producer. Provide Scale/Key, BPM, Chord Progression, Drum beat design, and complete lyrics with Chorus & Hook.",
             voice: "Text to voice engine.",
             image3d: "Image render generator.",
@@ -225,6 +225,40 @@
             return msg;
         }
 
+        async function callGroqAPI(key, text, aiMsgBox) {
+            const modelsToTry = ["llama-3.3-70b-versatile", "llama3-8b-8192", "mixtral-8x7b-32768"];
+            for (let model of modelsToTry) {
+                try {
+                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${key}`
+                        },
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [
+                                { role: "system", content: systemPrompts[currentMode] },
+                                ...chatHistory,
+                                { role: "user", content: text }
+                            ]
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.choices && data.choices[0]?.message?.content) {
+                        const reply = data.choices[0].message.content;
+                        chatHistory.push({ role: "user", content: text });
+                        chatHistory.push({ role: "assistant", content: reply });
+                        aiMsgBox.innerText = reply;
+                        return true;
+                    }
+                } catch (e) {
+                    // Try next model
+                }
+            }
+            return false;
+        }
+
         async function sendMessage() {
             const inputEl = document.getElementById('userInput');
             const text = inputEl.value.trim();
@@ -265,7 +299,7 @@
 
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is thinking...");
 
-            // 3. Google Gemini Engine (Supports New AQ Auth Keys & Image Uploads)
+            // 3. Google Gemini Engine (Photo & Deep Reasoning)
             if ((prefEngine === 'gemini' && geminiKey) || currentImageBase64) {
                 if (!geminiKey) {
                     aiMsgBox.innerText = "❌ Please paste your Google Gemini Key above to analyze photos.";
@@ -275,20 +309,18 @@
                     const parts = [];
                     if (currentImageBase64) {
                         parts.push({
-                            inline_data: {
-                                mime_type: "image/jpeg",
+                            inlineData: {
+                                mimeType: "image/jpeg",
                                 data: currentImageBase64
                             }
                         });
                     }
-                    parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question: ${text || 'Solve the question in image step-by-step.'}` });
+                    parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question: ${text || 'Solve the question shown in the image.'}` });
 
-                    // Uses x-goog-api-key header to natively support both AIza and AQ auth formats
-                    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent", {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
                         method: "POST",
                         headers: {
-                            "Content-Type": "application/json",
-                            "x-goog-api-key": geminiKey
+                            "Content-Type": "application/json"
                         },
                         body: JSON.stringify({ contents: [{ parts }] })
                     });
@@ -298,47 +330,24 @@
                         aiMsgBox.innerText = data.candidates[0].content.parts[0].text;
                         clearImage();
                         return;
-                    } else {
-                        throw new Error(data.error?.message || "Gemini processing error");
+                    } else if (groqKey && !currentImageBase64) {
+                        // fallback to groq if gemini quota issue
+                        const ok = await callGroqAPI(groqKey, text, aiMsgBox);
+                        if (ok) return;
                     }
+                    aiMsgBox.innerText = "❌ Gemini Error: " + (data.error?.message || "Invalid Key");
                 } catch (err) {
-                    if (!groqKey) {
-                        aiMsgBox.innerText = "❌ Gemini Error: " + err.message;
-                        clearImage();
-                        return;
-                    }
-                    aiMsgBox.innerText = "⚡ Falling back to Groq Engine...";
+                    aiMsgBox.innerText = "❌ Request Failed: " + err.message;
                 }
+                clearImage();
+                return;
             }
 
-            // 4. Groq Engine (Ultra Fast Text Llama 3.1 8B)
+            // 4. Groq Engine (Ultra Fast Multi-Model Fallback)
             if (groqKey) {
-                try {
-                    chatHistory.push({ role: "user", content: text });
-                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${groqKey}`
-                        },
-                        body: JSON.stringify({
-                            model: "llama-3.1-8b-instant",
-                            messages: [
-                                { role: "system", content: systemPrompts[currentMode] },
-                                ...chatHistory
-                            ]
-                        })
-                    });
-                    const data = await response.json();
-                    if (data.choices && data.choices[0]?.message?.content) {
-                        const reply = data.choices[0].message.content;
-                        aiMsgBox.innerText = reply;
-                        chatHistory.push({ role: "assistant", content: reply });
-                    } else {
-                        aiMsgBox.innerText = "❌ Groq Error: " + (data.error?.message || "Check Key");
-                    }
-                } catch (err) {
-                    aiMsgBox.innerText = "❌ Groq Request Failed: " + err.message;
+                const success = await callGroqAPI(groqKey, text, aiMsgBox);
+                if (!success) {
+                    aiMsgBox.innerText = "❌ Groq Error: Unable to fetch response with provided key. Please check key permissions.";
                 }
             } else {
                 aiMsgBox.innerText = "⚠️ Please paste either Groq Key or Gemini Key above.";
