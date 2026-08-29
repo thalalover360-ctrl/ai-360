@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 360 - Neural Hub Final</title>
+    <title>AI 360 - Neural Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -75,12 +75,6 @@
             <label style="font-size:0.7rem; color:#8f9ca7;">💎 Vision Core Key (Gemini):</label>
             <input type="password" id="geminiKey" class="dev-input" placeholder="Paste AIza key">
 
-            <label style="font-size:0.7rem; color:#8f9ca7;">Preferred Neural Engine:</label>
-            <select id="engineSelector" class="dev-select">
-                <option value="gemini">💎 Gemini Vision + AI</option>
-                <option value="groq">⚡ Groq LPU + Multimodal Vision</option>
-            </select>
-            
             <button class="save-btn" onclick="saveSettings()">Save & Close</button>
         </div>
     </div>
@@ -91,15 +85,15 @@
             <div class="card-icon">⚡</div>
             <div class="card-info">
                 <h3>Study AI + Photo Solver 📸</h3>
-                <p>Instant step-by-step derivations & solutions</p>
+                <p>Instant step-by-step solutions & derivations</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('music')">
             <div class="card-num">02</div>
             <div class="card-icon">🎵</div>
             <div class="card-info">
-                <h3>AI Songwriter & Vocal Reciter 🎙️</h3>
-                <p>Catchy Bollywood/Rap lyrics with tap-to-speak voice</p>
+                <h3>AI Songwriter & Voice Reciter 🎙️</h3>
+                <p>Punchy Bollywood/Rap lyrics with tap-to-speak voice</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
@@ -107,12 +101,12 @@
             <div class="card-icon">🎙️</div>
             <div class="card-info">
                 <h3>Text to Voice AI</h3>
-                <p>Instant speech playback</p>
+                <p>Instant audio speech playback</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('image3d')">
             <div class="card-num">04</div>
-            <div class="card-info">🎨</div>
+            <div class="card-icon">🎨</div>
             <div class="card-info">
                 <h3>3D Image Generator AI</h3>
                 <p>Hyper-realistic HD Flux renders & avatars</p>
@@ -120,7 +114,7 @@
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
             <div class="card-num">05</div>
-            <div class="card-info">🎮</div>
+            <div class="card-icon">🎮</div>
             <div class="card-info">
                 <h3>Gaming Pro Mentor AI</h3>
                 <p>Tactics, loadouts & clutch strategies</p>
@@ -153,18 +147,14 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-    
-    <script>
+        <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
-        let cachedGroqModels = null;
 
         const groqEl = document.getElementById('groqKey');
         const geminiEl = document.getElementById('geminiKey');
-        const engineEl = document.getElementById('engineSelector');
 
         groqEl.value = localStorage.getItem('ai360_groq') || '';
         geminiEl.value = localStorage.getItem('ai360_gemini') || '';
-        engineEl.value = localStorage.getItem('ai360_pref_engine') || 'gemini';
 
         function toggleModal() {
             const m = document.getElementById('devModal');
@@ -174,15 +164,13 @@
         function saveSettings() {
             localStorage.setItem('ai360_groq', groqEl.value.trim());
             localStorage.setItem('ai360_gemini', geminiEl.value.trim());
-            localStorage.setItem('ai360_pref_engine', engineEl.value);
-            cachedGroqModels = null;
             toggleModal();
-            alert("✅ Settings saved successfully!");
+            alert("✅ Settings saved!");
         }
 
         const systemPrompts = {
             study: "You are an expert professor. Solve math, physics, chemistry questions step-by-step with clear derivations and highlight final answers.",
-            music: "You are an Indian Rap/Pop Songwriter. Write ONLY 4-6 catchy rhyming punchlines in Roman Hinglish. Do NOT give explanations or markdown symbols. Give pure song lyrics.",
+            music: "You are an Indian Rap/Pop Songwriter. Write ONLY 4-6 catchy rhyming punchlines in Roman Hinglish. Do NOT write disclaimers or markdown symbols.",
             voice: "Text to voice engine.",
             image3d: "Image render generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
@@ -285,7 +273,7 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
         }
 
-        // Active Gemini Vision Engine
+        // Direct call to Gemini 3.5 Flash Lite
         async function callGemini(geminiKey, text) {
             const parts = [];
             if (currentImageBase64) {
@@ -298,10 +286,10 @@
             }
             parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question: ${text || 'Solve step-by-step.'}` });
 
-            const activeModels = ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.0-flash-lite"];
+            const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash"];
             let lastErr = "";
 
-            for (let m of activeModels) {
+            for (let m of targetModels) {
                 try {
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${geminiKey}`, {
                         method: "POST",
@@ -320,56 +308,8 @@
             throw new Error(lastErr || "Gemini endpoint error");
         }
 
-        // Active Groq Multimodal Vision Engine
-        async function callGroqVision(groqKey, text) {
-            const content = [{ type: "text", text: `${systemPrompts[currentMode]}\n\n${text || 'Solve step-by-step.'}` }];
-            if (currentImageBase64) {
-                content.push({
-                    type: "image_url",
-                    image_url: { url: `data:image/jpeg;base64,${currentImageBase64}` }
-                });
-            }
-            const activeVision = ["meta-llama/llama-4-scout-17b-16e-instruct", "meta-llama/llama-4-maverick-17b-128e-instruct"];
-            let lastErr = "";
-            for (let vm of activeVision) {
-                try {
-                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqKey}` },
-                        body: JSON.stringify({
-                            model: vm,
-                            messages: [{ role: "user", content: content }]
-                        })
-                    });
-                    const data = await response.json();
-                    if (data.choices && data.choices[0]?.message?.content) {
-                        return data.choices[0].message.content;
-                    }
-                    if (data.error?.message) lastErr = data.error.message;
-                } catch (e) {
-                    lastErr = e.message;
-                }
-            }
-            throw new Error(lastErr || "Groq Vision unavailable");
-        }
-
-        async function getAvailableGroqModels(groqKey) {
-            if (cachedGroqModels && cachedGroqModels.length > 0) return cachedGroqModels;
-            try {
-                const res = await fetch("https://api.groq.com/openai/v1/models", {
-                    headers: { "Authorization": `Bearer ${groqKey}` }
-                });
-                const data = await res.json();
-                if (data.data && Array.isArray(data.data)) {
-                    cachedGroqModels = data.data.map(m => m.id).filter(id => !id.includes("whisper") && !id.includes("guard"));
-                    if (cachedGroqModels.length > 0) return cachedGroqModels;
-                }
-            } catch(e) {}
-            return ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-20b"];
-        }
-
         async function callGroqText(groqKey, text) {
-            const models = await getAvailableGroqModels(groqKey);
+            const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
             let lastErr = "";
             for (let m of models) {
                 try {
@@ -433,7 +373,6 @@
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is processing...");
             let responseText = "", success = false, errorMsg = "";
 
-            // 1. Try Gemini Vision
             if (geminiKey) {
                 try {
                     responseText = await callGemini(geminiKey, text);
@@ -443,17 +382,6 @@
                 }
             }
 
-            // 2. Fallback to Groq Vision if photo is attached
-            if (!success && currentImageBase64 && groqKey) {
-                try {
-                    responseText = await callGroqVision(groqKey, text);
-                    success = true;
-                } catch (err) {
-                    errorMsg += " | Groq Vision: " + err.message;
-                }
-            }
-
-            // 3. Fallback to Groq Text
             if (!success && !currentImageBase64 && groqKey) {
                 try {
                     responseText = await callGroqText(groqKey, text);
