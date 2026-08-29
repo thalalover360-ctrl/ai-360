@@ -46,9 +46,10 @@
         .msg-ai { align-self: flex-start; background: #131a2d; color: #e2e8f0; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 10px; margin-top: 8px; border: 1px solid #00f2fe; display: block; }
 
-        .voice-card { background: rgba(0,242,254,0.08); border: 1px solid #00f2fe; border-radius: 10px; padding: 10px; margin-top: 8px; display: flex; gap: 8px; }
+        .music-card { background: #0a0f1d; border: 1px solid #00f2fe; border-radius: 12px; padding: 12px; margin-top: 10px; }
+        .music-player-row { display: flex; gap: 8px; margin-top: 10px; }
         .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px; font-size: 0.8rem; font-weight: 700; color: #05070e; cursor: pointer; }
-        .v-btn-copy { background: #1a233a; color: #00f2fe; border: 1px solid #4facfe; }
+        .v-btn-sec { background: #161e33; color: #00f2fe; border: 1px solid #4facfe; }
         .v-btn-stop { flex: 0.35; background: #ef4444; color: #fff; }
 
         .img-preview-bar { display: none; align-items: center; gap: 10px; background: #13192b; padding: 8px 12px; border-radius: 10px; margin-bottom: 10px; font-size: 0.78rem; color: #00f2fe; }
@@ -65,23 +66,19 @@
 <body>
     <div class="glow-bg"></div>
     <header>
-        <div class="dev-gear" onclick="toggleModal()" title="Engine Settings">⚙️ Neural Settings</div>
+        <div class="dev-gear" onclick="toggleModal()" title="Core Config">⚙️ Neural Key</div>
         <h1 class="brand-title">AI 360</h1>
-        <p class="tagline">Next-Gen Hybrid Neural Hub</p>
+        <p class="tagline">Next-Gen Multi-Modal Neural Hub</p>
     </header>
 
     <div class="dev-modal" id="devModal">
         <div class="dev-modal-box">
             <div class="dev-modal-header">
-                <span>⚡ Neural Engine Keys</span>
+                <span>⚡ Neural Access Key</span>
                 <span style="cursor:pointer;" onclick="toggleModal()">✕</span>
             </div>
-            <label class="dev-label">💎 Primary Multimodal Key (Study, Vision & Gaming):</label>
-            <input type="password" id="primaryKey" class="dev-input" placeholder="Paste Primary Key">
-            
-            <label class="dev-label">🎵 Lyricist & Music Studio Key (Groq):</label>
-            <input type="password" id="musicKey" class="dev-input" placeholder="Paste Music Key (gsk_...)">
-
+            <label class="dev-label">🔑 Neural Access Key (Study, Song & Gaming):</label>
+            <input type="password" id="coreKey" class="dev-input" placeholder="Paste your API key here">
             <button class="save-btn" onclick="saveSettings()">Save & Activate</button>
         </div>
     </div>
@@ -92,15 +89,15 @@
             <div class="card-icon">📚</div>
             <div class="card-info">
                 <h3>Study AI + Deep Solver 📸</h3>
-                <p>Advanced derivations, step-by-step physics/math/chem</p>
+                <p>Derivations, step-by-step problem solver & photo scanner</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('music')">
             <div class="card-num">02</div>
-            <div class="card-icon">🎙️</div>
+            <div class="card-icon">🎵</div>
             <div class="card-info">
-                <h3>Studio Songwriter & Vocalist 🎵</h3>
-                <p>High-energy rhyming Bollywood/Rap lyrics with audio flow</p>
+                <h3>AI Music & Studio Songwriter 🎙️</h3>
+                <p>Suno-style track composer, rhythm lyrics & vocal audition</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
@@ -108,7 +105,7 @@
             <div class="card-icon">🗣️</div>
             <div class="card-info">
                 <h3>Text to Voice Studio</h3>
-                <p>Instant clear voice speech synthesizer</p>
+                <p>Instant clear audio vocal synthesizer</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('imagestudio')">
@@ -116,7 +113,7 @@
             <div class="card-icon">🎨</div>
             <div class="card-info">
                 <h3>Ultra-HD 3D Art Studio 🖼️</h3>
-                <p>Pure Studio Ghibli Anime, 3D Octane & Sci-Fi Logos</p>
+                <p>Studio Ghibli 2D Anime, 3D Octane & Sci-Fi Logos</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
@@ -124,7 +121,7 @@
             <div class="card-icon">🎮</div>
             <div class="card-info">
                 <h3>Pro Esports Mentor AI</h3>
-                <p>Clutch mechanics, recoil guides & positioning</p>
+                <p>Tactics, loadouts & clutch decision trees</p>
             </div>
         </div>
     </div>
@@ -133,7 +130,7 @@
         <div class="panel-header">
             <h2 class="panel-title" id="panelTitle">Module Chat</h2>
             <div>
-                <span style="cursor:pointer; font-size:1.1rem; margin-right:12px;" onclick="toggleModal()" title="Settings">⚙️</span>
+                <span style="cursor:pointer; font-size:1.1rem; margin-right:12px;" onclick="toggleModal()" title="Config">⚙️</span>
                 <button class="close-btn" onclick="closeModule()">✕</button>
             </div>
         </div>
@@ -143,7 +140,7 @@
             <button class="style-btn" onclick="setArtStyle('logo', this)">🔮 3D Metallic Emblem</button>
         </div>
         <div class="chat-box" id="chatBox">
-            <div class="chat-msg msg-ai">⚡ AI 360 Core Online. Enter a prompt or upload an image!</div>
+            <div class="chat-msg msg-ai">⚡ Neural Core Ready. Enter a prompt or upload an image!</div>
         </div>
         <div class="img-preview-bar" id="imgPreviewBar">
             <img id="previewImg" class="preview-thumb">
@@ -163,11 +160,8 @@
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'ghibli';
 
-        const primaryKeyEl = document.getElementById('primaryKey');
-        const musicKeyEl = document.getElementById('musicKey');
-
-        primaryKeyEl.value = localStorage.getItem('ai360_primary_key') || '';
-        musicKeyEl.value = localStorage.getItem('ai360_music_key') || '';
+        const coreEl = document.getElementById('coreKey');
+        coreEl.value = localStorage.getItem('ai360_core_key') || '';
 
         function toggleModal() {
             const m = document.getElementById('devModal');
@@ -175,15 +169,14 @@
         }
 
         function saveSettings() {
-            localStorage.setItem('ai360_primary_key', primaryKeyEl.value.trim());
-            localStorage.setItem('ai360_music_key', musicKeyEl.value.trim());
+            localStorage.setItem('ai360_core_key', coreEl.value.trim());
             toggleModal();
-            alert("✅ Neural Engine Keys Saved!");
+            alert("✅ Neural Core Key Saved!");
         }
 
         const systemPrompts = {
             study: "You are an elite academic professor and problem solver. Provide comprehensive, step-by-step mathematical, physical, and chemical derivations. Break down fundamental concepts clearly, write clean formulas, and highlight final answers.",
-            music: "You are an award-winning Indian Bollywood & Hip-Hop Lyricist. Write 8-10 high-energy, catchy, and deeply emotional rhyming punchlines in Roman Hinglish. Use strict AABB or ABAB rhyming schemes with authentic street/poetic flow. Output only pure lyrics line-by-line without headers, explanations, or special punctuation.",
+            music: "You are a professional Music Director and Lyricist. Write an energetic, catchy song with natural rhyming flow in Roman Hinglish. Include [Verse 1], [Chorus], and [Drop]. Use tight end-rhymes (AABB scheme) without extra conversation.",
             voice: "Text to voice engine.",
             imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are a professional Tier-1 esports coach. Give precise clutch decision trees, sensitivity guides, weapon attachments, and optimal positioning strategies."
@@ -199,7 +192,7 @@
             const styleSelector = document.getElementById('styleSelector');
             styleSelector.style.display = (mode === 'imagestudio') ? 'flex' : 'none';
 
-            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Type below or upload a photo!</div>`;
+            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">⚡ Activated <b>${mode.toUpperCase()}</b> Mode. Type below or upload an image!</div>`;
             clearImage();
         }
 
@@ -259,7 +252,6 @@
             return msg;
         }
 
-        // Clean Natural Vocal Synthesizer (No dots/commas pronounced)
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -279,7 +271,7 @@
 
             const u = new SpeechSynthesisUtterance(cleanTxt);
             if (currentMode === 'music') {
-                u.rate = 1.02;
+                u.rate = 1.05;
                 u.pitch = 1.15;
             } else {
                 u.rate = 0.95;
@@ -302,33 +294,8 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied to clipboard!"));
         }
 
-        // 1. Dedicated Groq Engine for Ultra-Rhythmic Lyricist
-        async function callGroqMusic(apiKey, prompt) {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    messages: [
-                        { role: "system", content: systemPrompts.music },
-                        { role: "user", content: `Write an energetic, catchy rhyming song about: ${prompt}` }
-                    ],
-                    temperature: 0.85
-                })
-            });
-
-            const data = await res.json();
-            if (data.choices && data.choices[0]?.message?.content) {
-                return data.choices[0].message.content;
-            }
-            throw new Error(data.error?.message || "Groq Music Studio error");
-        }
-
-        // 2. Primary Multimodal Engine (2.0 to 3.5 Fallback for Study, Vision & Gaming)
-        async function callPrimaryEngine(apiKey, text, isImage = false) {
+        // Multimodal Fallback Engine
+        async function callNeuralCore(apiKey, text, isImage = false) {
             const candidateModels = [
                 "gemini-3.5-flash",
                 "gemini-3.0-flash",
@@ -347,10 +314,11 @@
                 });
             }
             parts.push({
-                text: `${systemPrompts[currentMode] || ""}\n\nTask: ${text || "Process and analyze step-by-step."}`
+                text: `${systemPrompts[currentMode] || ""}\n\nTask: ${text || "Process step-by-step."}`
             });
 
             let lastError = "";
+
             for (const model of candidateModels) {
                 try {
                     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
@@ -371,14 +339,14 @@
                     lastError = e.message;
                 }
             }
-            throw new Error(lastError || "Primary Engine connection failed.");
+
+            throw new Error(lastError || "Neural core execution failed.");
         }
 
         async function sendMessage() {
             const inputEl = document.getElementById('userInput');
             const text = inputEl.value.trim();
-            const pKey = primaryKeyEl.value.trim();
-            const mKey = musicKeyEl.value.trim();
+            const apiKey = coreEl.value.trim();
             
             if (!text && !currentImageBase64) return;
 
@@ -392,7 +360,7 @@
                 window.lastVoiceText = text;
                 appendMessage('ai', `
                     <div>🗣️ <b>Reciting:</b> "${text}"</div>
-                    <div class="voice-card">
+                    <div class="music-player-row">
                         <button class="v-btn" onclick="playSpeech(window.lastVoiceText)">🔊 Replay Audio</button>
                         <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                     </div>
@@ -401,25 +369,22 @@
                 return;
             }
 
-            // 2. High-Definition Art Studio Mode (Strict Ghibli 2D Anime & 3D Octane)
+            // 2. High-Definition Art Studio Mode (Pure Studio Ghibli & 3D Render)
             if (currentMode === 'imagestudio') {
-                const loadingMsg = appendMessage('ai', "🎨 Rendering Studio Masterpiece...");
+                const loadingMsg = appendMessage('ai', "🎨 Rendering Ultra-HD Artwork...");
                 const seed = Math.floor(Math.random() * 9999999);
                 let basePrompt = text || "A peaceful fantasy world";
 
                 let finalPrompt = "";
-                let modelType = "flux";
-
                 if (selectedArtStyle === 'ghibli') {
-                    modelType = "flux-anime";
-                    finalPrompt = `Studio Ghibli aesthetic, anime movie scene by Hayao Miyazaki, ${basePrompt}, hand drawn 2D anime artstyle, vibrant colors, lush greenery, cumulus anime clouds, Makoto Shinkai aesthetic, high quality anime wallpaper 8k`;
+                    finalPrompt = `Studio Ghibli aesthetic, anime movie scene by Hayao Miyazaki, ${basePrompt}, hand drawn 2D anime artstyle, vibrant colors, lush greenery, cumulus anime clouds, high quality anime wallpaper 8k`;
                 } else if (selectedArtStyle === 'realism') {
-                    finalPrompt = `${basePrompt}, cinematic octane 3d render, hyperrealistic lighting, 8k resolution, raytracing, intricate photorealistic textures`;
+                    finalPrompt = `${basePrompt}, cinematic octane 3d render, hyperrealistic lighting, 8k resolution, raytracing`;
                 } else if (selectedArtStyle === 'logo') {
                     finalPrompt = `3D minimal futuristic metallic logo emblem for ${basePrompt}, glowing neon cyan accents, dark studio backdrop, 8k vector`;
                 }
 
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=1024&height=1024&seed=${seed}&model=${modelType}&nologo=true`;
+                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
 
                 const testImg = new Image();
                 testImg.onload = () => {
@@ -432,12 +397,7 @@
                     `;
                 };
                 testImg.onerror = () => {
-                    // Fallback to standard flux if model takes too long
-                    const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true`;
-                    loadingMsg.innerHTML = `
-                        <div>✨ <b>Generated Artwork:</b></div>
-                        <img src="${fallbackUrl}" class="msg-img">
-                    `;
+                    loadingMsg.innerText = "❌ Image generation failed. Please try another prompt.";
                 };
                 testImg.src = imgUrl;
 
@@ -445,48 +405,43 @@
                 return;
             }
 
-            // 3. Music Studio Mode (Groq Llama-3 with Primary Fallback)
-            if (currentMode === 'music') {
-                const aiMsgBox = appendMessage('ai', "🎵 Crafting Lyrics & Flow...");
-                try {
-                    let lyrics = "";
-                    if (mKey) {
-                        lyrics = await callGroqMusic(mKey, text || "Heartfelt Bollywood Rap");
-                    } else if (pKey) {
-                        lyrics = await callPrimaryEngine(pKey, text || "Heartfelt Bollywood Rap");
-                    } else {
-                        throw new Error("Please add your Primary or Music Key in ⚙️ Settings.");
-                    }
-
-                    window.lastSong = lyrics;
-                    aiMsgBox.innerHTML = `
-                        <div>🎵 <b>Song Lyrics:</b><br><br>${lyrics.replace(/\n/g, '<br>')}</div>
-                        <div class="voice-card">
-                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🎙️ Recite Vocals</button>
-                            <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy Lyrics</button>
-                            <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
-                        </div>
-                    `;
-                    playSpeech(lyrics);
-                } catch (err) {
-                    aiMsgBox.innerText = "❌ " + err.message;
-                }
-                clearImage();
-                return;
-            }
-
-            // 4. Study & Gaming Neural Core (Primary Engine)
-            if (!pKey) {
-                appendMessage('ai', "❌ Primary Key Missing! Click ⚙️ Neural Settings at top and paste your key.");
+            // 3. Neural Core (Study, Music, Gaming)
+            if (!apiKey) {
+                appendMessage('ai', "❌ Access Key Missing! Click ⚙️ Neural Key at the top and paste your key.");
                 toggleModal();
                 clearImage();
                 return;
             }
 
-            const aiMsgBox = appendMessage('ai', "⚡ AI 360 Processing...");
+            const aiMsgBox = appendMessage('ai', "⚡ AI 360 Core Processing...");
+
             try {
-                const responseText = await callPrimaryEngine(pKey, text, !!currentImageBase64);
-                aiMsgBox.innerText = responseText;
+                const responseText = await callNeuralCore(apiKey, text, !!currentImageBase64);
+
+                if (currentMode === 'music') {
+                    window.lastSong = responseText;
+                    const sunoLink = `https://suno.com/create?prompt=${encodeURIComponent(text || "Bollywood Beat Track")}`;
+
+                    aiMsgBox.innerHTML = `
+                        <div class="music-card">
+                            <div style="color:#00f2fe; font-weight:800; margin-bottom:8px;">🎵 AI Studio Track Composition:</div>
+                            <div style="font-size:0.82rem; line-height:1.6;">${responseText.replace(/\n/g, '<br>')}</div>
+                            <div class="music-player-row">
+                                <button class="v-btn" onclick="playSpeech(window.lastSong)">🎙️ Recite Demo</button>
+                                <button class="v-btn v-btn-sec" onclick="copyTxt(window.lastSong)">📋 Copy Lyrics</button>
+                                <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️</button>
+                            </div>
+                            <div style="margin-top:12px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                                <a href="${sunoLink}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg,#ff007a,#7928ca); color:#fff; text-decoration:none; padding:10px; border-radius:8px; font-size:0.82rem; font-weight:800;">
+                                    🎹 Generate Full 2-Min Studio Audio on Suno.ai ↗
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    playSpeech(responseText);
+                } else {
+                    aiMsgBox.innerText = responseText;
+                }
             } catch (err) {
                 aiMsgBox.innerText = "❌ " + err.message;
             }
