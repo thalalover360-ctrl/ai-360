@@ -40,9 +40,9 @@
         .msg-ai { align-self: flex-start; background: #182035; color: #d0f4fc; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #00f2fe; }
 
-        .voice-card { background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; border-radius: 10px; padding: 10px; margin-top: 6px; display: flex; flex-direction: column; gap: 8px; }
-        .voice-btn-row { display: flex; gap: 8px; }
-        .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 9px 12px; font-size: 0.82rem; font-weight: bold; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .voice-card { background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px; margin-top: 6px; display: flex; gap: 8px; }
+        .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px; font-size: 0.78rem; font-weight: bold; color: #000; cursor: pointer; }
+        .v-btn-copy { background: #1c243c; color: #00f2fe; border: 1px solid #4facfe; }
         .v-btn-stop { flex: 0.4; background: #ff5252; color: #fff; }
 
         .img-preview-bar { display: none; align-items: center; gap: 8px; background: #121829; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.75rem; color: #00f2fe; }
@@ -98,21 +98,21 @@
             <div class="card-num">02</div>
             <div class="card-icon">🎵</div>
             <div class="card-info">
-                <h3>AI Songwriter & Voice Reciter 🎙️</h3>
-                <p>Catchy Bollywood/Rap lyrics with instant speech narration</p>
+                <h3>AI Songwriter & Vocal Reciter 🎙️</h3>
+                <p>Catchy Bollywood/Rap lyrics with tap-to-speak voice</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
             <div class="card-num">03</div>
             <div class="card-icon">🎙️</div>
             <div class="card-info">
-                <h3>Text to Voice AI (Instant Audio)</h3>
-                <p>Guaranteed speech playback engine</p>
+                <h3>Text to Voice AI</h3>
+                <p>Instant audio speech playback</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('image3d')">
             <div class="card-num">04</div>
-            <div class="card-info">🎨</div>
+            <div class="card-icon">🎨</div>
             <div class="card-info">
                 <h3>3D Image Generator AI</h3>
                 <p>Hyper-realistic HD Flux renders & avatars</p>
@@ -120,7 +120,7 @@
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
             <div class="card-num">05</div>
-            <div class="card-info">🎮</div>
+            <div class="card-icon">🎮</div>
             <div class="card-info">
                 <h3>Gaming Pro Mentor AI</h3>
                 <p>Tactics, loadouts & clutch strategies</p>
@@ -156,7 +156,6 @@
         <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let cachedGroqModels = null;
-        let speechVoices = [];
 
         const groqEl = document.getElementById('groqKey');
         const geminiEl = document.getElementById('geminiKey');
@@ -165,16 +164,6 @@
         groqEl.value = localStorage.getItem('ai360_groq') || '';
         geminiEl.value = localStorage.getItem('ai360_gemini') || '';
         engineEl.value = localStorage.getItem('ai360_pref_engine') || 'groq';
-
-        function loadVoices() {
-            if ('speechSynthesis' in window) {
-                speechVoices = window.speechSynthesis.getVoices();
-            }
-        }
-        loadVoices();
-        if ('speechSynthesis' in window && window.speechSynthesis.onvoiceschanged !== undefined) {
-            window.speechSynthesis.onvoiceschanged = loadVoices;
-        }
 
         function toggleModal() {
             const m = document.getElementById('devModal');
@@ -192,7 +181,7 @@
 
         const systemPrompts = {
             study: "You are an elite professor and interactive tutor. Provide concise step-by-step mathematical & conceptual solutions, explain formulas clearly, and solve doubts from images accurately.",
-            music: "You are an expert Bollywood & Desi Hip-Hop Songwriter. Write STRICTLY in Roman Hinglish (English alphabet) or Hindi. Provide catchy, rhyming lyrics in [Hook], [Verse 1], and [Verse 2] format without tables or symbols.",
+            music: "You are an expert Bollywood & Desi Hip-Hop Songwriter. Write ONLY pure rhyming song lyrics in Roman Hinglish. Use format: [Chorus], [Verse 1], [Verse 2]. Do NOT write descriptions, tables, or intro commentary.",
             voice: "Text to voice engine.",
             image3d: "Image render generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
@@ -243,53 +232,33 @@
             return msg;
         }
 
-        // --- Active Mobile Audio Unblocker & Voice Engine ---
+        // --- Direct Unblocked Speech Execution ---
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) {
-                alert("Speech not supported on this browser.");
+                alert("Speech Synthesis not supported");
                 return;
             }
 
             window.speechSynthesis.cancel();
-            if (window.speechSynthesis.paused) window.speechSynthesis.resume();
 
-            const cleanTxt = txt.replace(/[*#_`[\]]/g, '').replace(/Verse|Chorus|Hook|Bridge|Track Vibe/gi, '').trim().slice(0, 350);
+            const cleanTxt = txt.replace(/[*#_`[\]]/g, '').replace(/Verse|Chorus|Hook|Bridge/gi, '').slice(0, 300);
             if (!cleanTxt) return;
 
-            const utterance = new SpeechSynthesisUtterance(cleanTxt);
-            utterance.rate = 0.95;
-            utterance.pitch = 1.0;
-            utterance.volume = 1.0;
+            const u = new SpeechSynthesisUtterance(cleanTxt);
+            u.rate = 1.0;
+            u.pitch = 1.0;
+            u.lang = 'hi-IN';
 
-            if (speechVoices.length === 0) speechVoices = window.speechSynthesis.getVoices();
-            const indVoice = speechVoices.find(v => v.lang === 'hi-IN' || v.lang === 'en-IN' || v.name.includes('India') || v.name.includes('Hindi'));
-            if (indVoice) {
-                utterance.voice = indVoice;
-                utterance.lang = indVoice.lang;
-            } else {
-                utterance.lang = 'en-US';
-            }
-
-            // Fix for Android Chrome silence/freeze
-            window.speechSynthesis.speak(utterance);
-            const keepAlive = setInterval(() => {
-                if (!window.speechSynthesis.speaking) {
-                    clearInterval(keepAlive);
-                } else {
-                    window.speechSynthesis.pause();
-                    window.speechSynthesis.resume();
-                }
-            }, 10000);
+            // Immediate touch dispatch
+            window.speechSynthesis.speak(u);
         }
 
         function stopAudio() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
         }
 
         function copyTxt(t) {
-            navigator.clipboard.writeText(t).then(() => alert("📋 Lyrics Copied!"));
+            navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
         }
 
         async function callGemini(geminiKey, text) {
@@ -378,14 +347,13 @@
             if (currentMode === 'voice') {
                 window.lastVoiceText = text;
                 appendMessage('ai', `
-                    <div>🗣️ Text Ready for Voice: "${text}"</div>
+                    <div>🗣️ Text: "${text}"</div>
                     <div class="voice-card">
-                        <div class="voice-btn-row">
-                            <button class="v-btn" onclick="playSpeech(window.lastVoiceText)">🔊 Speak Voice Now</button>
-                            <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
-                        </div>
+                        <button class="v-btn" onclick="playSpeech(window.lastVoiceText)">🔊 Play Voice</button>
+                        <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                     </div>
                 `, true);
+                playSpeech(text);
                 return;
             }
 
@@ -428,12 +396,9 @@
                     aiMsgBox.innerHTML = `
                         <div>${responseText.replace(/\n/g, '<br>')}</div>
                         <div class="voice-card">
-                            <span style="font-size:0.75rem; color:#00f2fe; font-weight:600;">🎙️ Audio & Lyrics Controls:</span>
-                            <div class="voice-btn-row">
-                                <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Speak Lyrics</button>
-                                <button class="v-btn" onclick="copyTxt(window.lastSong)">📋 Copy</button>
-                                <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
-                            </div>
+                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Speak Lyrics</button>
+                            <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy</button>
+                            <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                         </div>
                     `;
                 } else {
@@ -447,4 +412,3 @@
     </script>
 </body>
 </html>
-
