@@ -73,7 +73,7 @@
                 <span style="cursor:pointer;" onclick="toggleModal()">✕</span>
             </div>
             <label style="font-size:0.7rem; color:#8f9ca7;">⚡ Primary LPU Key (Groq):</label>
-            <input type="password" id="groqKey" class="dev-input" placeholder="Paste gsk_ key">
+            <input type="password" id="groqKey" class="dev-input" placeholder="Paste Groq Key (gsk_...)">
             
             <label style="font-size:0.7rem; color:#8f9ca7;">💎 Vision Core Key (Gemini):</label>
             <input type="password" id="geminiKey" class="dev-input" placeholder="Paste Gemini Key">
@@ -117,7 +117,7 @@
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
             <div class="card-num">05</div>
-            <div class="card-info">🎮</div>
+            <div class="card-icon">🎮</div>
             <div class="card-info">
                 <h3>Gaming Pro Mentor AI</h3>
                 <p>Tactics, loadouts & clutch strategies</p>
@@ -322,13 +322,16 @@
         }
 
         async function callGroqText(groqKey, text) {
-            const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+            const models = ["llama-3.3-70b-versatile", "gemma2-9b-it", "mixtral-8x7b-32768"];
             let lastErr = "";
             for (let m of models) {
                 try {
                     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqKey}` },
+                        headers: { 
+                            "Content-Type": "application/json", 
+                            "Authorization": `Bearer ${groqKey}` 
+                        },
                         body: JSON.stringify({
                             model: m,
                             messages: [
@@ -417,7 +420,7 @@
                 }
             }
 
-            // High-Speed Text Processing via Groq LPU (Llama 3.3 70B)
+            // High-Speed Text Processing via Groq LPU (Llama 3.3 70B & Active Fallbacks)
             if (!success && !currentImageBase64 && groqKey) {
                 try {
                     responseText = await callGroqText(groqKey, text);
