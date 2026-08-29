@@ -73,10 +73,10 @@
                 <span style="cursor:pointer;" onclick="toggleModal()">✕</span>
             </div>
             <label style="font-size:0.7rem; color:#8f9ca7;">⚡ Primary LPU Key (Groq):</label>
-            <input type="password" id="groqKey" class="dev-input" placeholder="Paste Groq Key (gsk_...)">
+            <input type="password" id="groqKey" class="dev-input" placeholder="Paste gsk_ key">
             
             <label style="font-size:0.7rem; color:#8f9ca7;">💎 Vision Core Key (Gemini):</label>
-            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste Gemini Key">
+            <input type="password" id="geminiKey" class="dev-input" placeholder="Paste AIza key">
 
             <button class="save-btn" onclick="saveSettings()">Save & Close</button>
         </div>
@@ -179,7 +179,7 @@
 
         const systemPrompts = {
             study: "You are an expert professor. Solve math, physics, chemistry questions step-by-step with clear derivations and highlight final answers.",
-            music: "You are an elite Indian Bollywood/Rap Songwriter & Lyricist. Write 6-8 catchy, emotional, rhyming punchlines in Roman Hinglish. Deliver pure poetic vibes and punchy rhyming hooks without extra conversational disclaimers.",
+            music: "You are an Indian Rap/Pop Songwriter. Write ONLY 4-6 catchy rhyming punchlines in Roman Hinglish. Do NOT write disclaimers or markdown symbols.",
             voice: "Text to voice engine.",
             imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
@@ -268,14 +268,17 @@
                 .replace(/\[.*?\]/g, '')
                 .replace(/\(.*?\)/g, '')
                 .replace(/[*#_`~>\-|=]/g, ' ')
-                .replace(/\n+/g, '. ')
-                .trim();
+                .split('\n')
+                .map(l => l.trim())
+                .filter(l => l.length > 2)
+                .slice(0, 6)
+                .join('. ');
 
             if (!cleanTxt) return;
 
             const u = new SpeechSynthesisUtterance(cleanTxt);
-            u.rate = 0.95;
-            u.pitch = 1.0;
+            u.rate = 1.0;
+            u.pitch = 1.05;
             u.lang = 'hi-IN';
 
             const voices = window.speechSynthesis.getVoices();
@@ -293,86 +296,67 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
         }
 
-        async function callGroqVision(groqKey, text) {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json", 
-                    "Authorization": `Bearer ${groqKey}` 
-                },
-                body: JSON.stringify({
-                    model: "llama-3.2-11b-vision-preview",
-                    messages: [
-                        { role: "system", content: systemPrompts[currentMode] },
-                        {
-                            role: "user",
-                            content: [
-                                { type: "text", text: text || "Solve and analyze this step-by-step." },
-                                { type: "image_url", image_url: { url: `data:image/jpeg;base64,${currentImageBase64}` } }
-                            ]
-                        }
-                    ]
-                })
-            });
-            const data = await response.json();
-            if (data.choices && data.choices[0]?.message?.content) {
-                return data.choices[0].message.content;
-            }
-            throw new Error(data.error?.message || "Groq Vision Processing Failed");
-        }
-
-        async function callGroqText(groqKey, text) {
-            try {
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json", 
-                        "Authorization": `Bearer ${groqKey}` 
-                    },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [
-                            { role: "system", content: systemPrompts[currentMode] },
-                            ...chatHistory,
-                            { role: "user", content: text }
-                        ]
-                    })
-                });
-                const data = await response.json();
-                if (data.choices && data.choices[0]?.message?.content) {
-                    return data.choices[0].message.content;
-                }
-                throw new Error(data.error?.message || "Groq Text Generation Failed");
-            } catch (e) {
-                throw new Error(e.message || "Groq Text Error");
-            }
-        }
-                    async function callGemini(geminiKey, text, isImage = false) {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-            
-            let parts = [];
-            if (isImage && currentImageBase64) {
+        async function callGemini(geminiKey, text) {
+            const parts = [];
+            if (currentImageBase64) {
                 parts.push({
-                    inlineData: {
-                        mimeType: "image/jpeg",
+                    inline_data: {
+                        mime_type: "image/jpeg",
                         data: currentImageBase64
                     }
                 });
             }
-            parts.push({
-                text: `${systemPrompts[currentMode] || ""}\n\nUser: ${text || "Please provide the solution/lyrics step-by-step."}`
-            });
+            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}` });
 
-            const res = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts }] })
-            });
-            const data = await res.json();
-            if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                return data.candidates[0].content.parts[0].text;
+            const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-2.0-flash"];
+            let lastErr = "";
+
+            for (let m of targetModels) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${geminiKey}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: [{ parts }] })
+                    });
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                    if (data.error?.message) lastErr = data.error.message;
+                } catch (e) {
+                    lastErr = e.message;
+                }
             }
-            throw new Error(data.error?.message || "Gemini Flash API request failed");
+            throw new Error(lastErr || "Gemini API Error");
+        }
+
+        async function callGroqText(groqKey, text) {
+            const models = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+            let lastErr = "";
+            for (let m of models) {
+                try {
+                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${groqKey}` },
+                        body: JSON.stringify({
+                            model: m,
+                            messages: [
+                                { role: "system", content: systemPrompts[currentMode] },
+                                ...chatHistory,
+                                { role: "user", content: text }
+                            ]
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.choices && data.choices[0]?.message?.content) {
+                        return data.choices[0].message.content;
+                    }
+                    if (data.error?.message) lastErr = data.error.message;
+                } catch (e) {
+                    lastErr = e.message;
+                }
+            }
+            throw new Error(lastErr || "Groq Text Error");
         }
 
         async function sendMessage() {
@@ -380,21 +364,19 @@
             const text = inputEl.value.trim();
             const groqKey = groqEl.value.trim();
             const geminiKey = geminiEl.value.trim();
-            
             if (!text && !currentImageBase64) return;
 
             let userDisplay = text;
-            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Solve and analyze this image.");
+            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Process attached media.");
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // --- 1. Text To Voice Only Mode ---
             if (currentMode === 'voice') {
                 window.lastVoiceText = text;
                 appendMessage('ai', `
-                    <div>🗣️ <b>Speaking:</b> "${text}"</div>
+                    <div>🗣️ Text: "${text}"</div>
                     <div class="voice-card">
-                        <button class="v-btn" onclick="playSpeech(window.lastVoiceText)">🔊 Replay Voice</button>
+                        <button class="v-btn" onclick="playSpeech(window.lastVoiceText)">🔊 Play Voice</button>
                         <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                     </div>
                 `, true);
@@ -402,81 +384,66 @@
                 return;
             }
 
-            // --- 2. AI Image & Art Studio Mode ---
+            // --- AI Image & Art Studio (Direct & Sharp Rendering) ---
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "✨ Rendering Ultra-HD Masterpiece...");
+                
                 const seed = Math.floor(Math.random() * 9999999);
-                let userPromptText = text || "Futuristic digital art";
-                let promptStyle = "";
+                let finalPrompt = "";
+                let userPromptText = text || "Artistic high quality composition";
 
                 if (selectedArtStyle === 'realism') {
-                    promptStyle = `${userPromptText}, hyper-realistic 3d octane render, cinematic lighting, ray tracing, 8k resolution, photorealistic details, high textures`;
+                    finalPrompt = encodeURIComponent(`${userPromptText}, hyper-realistic 3d octane render, unreal engine 5, ray tracing, cinematic lighting, 8k resolution, photorealistic details`);
                 } else if (selectedArtStyle === 'ghibli') {
-                    promptStyle = `${userPromptText}, Studio Ghibli cinematic animation style, Hayao Miyazaki aesthetic, vibrant watercolor gradients, magical atmosphere, 8k`;
+                    finalPrompt = encodeURIComponent(`${userPromptText}, breathtaking Studio Ghibli cinematic scenery, Hayao Miyazaki anime style background, soft watercolor gradients, magical atmosphere, highly detailed, 8k`);
                 } else if (selectedArtStyle === 'logo') {
-                    promptStyle = `Minimalist modern 3D vector logo for "${userPromptText}", glowing metallic finish, centered icon, clean dark background, 8k`;
+                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${userPromptText}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
                 }
 
-                const encodedPrompt = encodeURIComponent(promptStyle);
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
+                const imgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1024&height=1024&model=flux-realism&seed=${seed}&nologo=true&enhance=true`;
 
-                const testImg = new Image();
-                testImg.onload = () => {
+                setTimeout(() => {
                     loadingMsg.innerHTML = `
-                        <div>🎨 <b>Generated Artwork:</b></div>
+                        <div>🎨 <b>Generated Masterpiece:</b></div>
                         <img src="${imgUrl}" class="msg-img">
-                        <div style="margin-top:8px;">
-                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:6px 14px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none; font-weight:600;">🔍 View Full HD</a>
+                        <div style="margin-top:6px;">
+                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full HD Image</a>
                         </div>
                     `;
-                };
-                testImg.onerror = () => {
-                    loadingMsg.innerText = "❌ Failed to render image. Please try another prompt.";
-                };
-                testImg.src = imgUrl;
-
-                clearImage();
+                }, 1000);
                 return;
             }
 
-            // --- 3. Text & Vision Modes (Groq / Gemini Hybrid) ---
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is processing...");
             let responseText = "", success = false, errorMsg = "";
 
-            // First Priority: Gemini Flash (Text & Vision)
             if (geminiKey) {
                 try {
-                    responseText = await callGemini(geminiKey, text, !!currentImageBase64);
+                    responseText = await callGemini(geminiKey, text);
                     success = true;
                 } catch (err) {
-                    console.warn("Gemini Error:", err.message);
+                    errorMsg = "Gemini: " + err.message;
                 }
             }
 
-            // Secondary / Fallback: Groq LPU
-            if (!success && groqKey) {
+            if (!success && !currentImageBase64 && groqKey) {
                 try {
-                    if (currentImageBase64) {
-                        responseText = await callGroqVision(groqKey, text);
-                    } else {
-                        responseText = await callGroqText(groqKey, text);
-                    }
+                    responseText = await callGroqText(groqKey, text);
+                    chatHistory.push({ role: "user", content: text });
+                    chatHistory.push({ role: "assistant", content: responseText });
                     success = true;
                 } catch (err) {
-                    errorMsg = err.message;
+                    errorMsg += " | Groq: " + err.message;
                 }
             }
 
             if (success) {
-                chatHistory.push({ role: "user", content: text });
-                chatHistory.push({ role: "assistant", content: responseText });
-
                 if (currentMode === 'music') {
                     window.lastSong = responseText;
                     aiMsgBox.innerHTML = `
-                        <div>🎵 <b>Song Lyrics:</b><br><br>${responseText.replace(/\n/g, '<br>')}</div>
+                        <div>${responseText.replace(/\n/g, '<br>')}</div>
                         <div class="voice-card">
-                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Recite Lyrics</button>
+                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Speak Song</button>
                             <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy</button>
                             <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                         </div>
@@ -486,9 +453,8 @@
                     aiMsgBox.innerText = responseText;
                 }
             } else {
-                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key error. Please verify your keys in ⚙️ Settings.");
+                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue. Check ⚙️ Settings.");
             }
-
             clearImage();
         }
     </script>
