@@ -155,7 +155,7 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-        <script>
+    <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let selectedArtStyle = 'realism';
 
@@ -179,7 +179,7 @@
 
         const systemPrompts = {
             study: "You are an expert professor. Solve math, physics, chemistry questions step-by-step with clear derivations and highlight final answers.",
-            music: "You are an Indian Rap/Pop Songwriter. Write ONLY 4-6 catchy rhyming punchlines in Roman Hinglish. Do NOT write disclaimers or markdown symbols.",
+            music: "You are an elite Indian Bollywood/Rap Songwriter & Lyricist. Write 6-8 catchy, emotional, and rhyming punchlines in Roman Hinglish. Focus purely on poetic vibes and catchy hooks without extra conversational fluff.",
             voice: "Text to voice engine.",
             imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
@@ -308,7 +308,7 @@
             }
             parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}` });
 
-            const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-2.0-flash"];
+            const targetModels = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
             let lastErr = "";
 
             for (let m of targetModels) {
@@ -384,20 +384,21 @@
                 return;
             }
 
-            // --- AI Image & Art Studio (Direct & Sharp Rendering) ---
+            // --- AI Image & Art Studio (Modified Ghibli & Realistic Engine) ---
             if (currentMode === 'imagestudio') {
                 const loadingMsg = appendMessage('ai', "✨ Rendering Ultra-HD Masterpiece...");
                 
                 const seed = Math.floor(Math.random() * 9999999);
                 let finalPrompt = "";
-                let userPromptText = text || "Artistic high quality composition";
+                let userPromptText = text || "Artistic portrait";
 
                 if (selectedArtStyle === 'realism') {
-                    finalPrompt = encodeURIComponent(`${userPromptText}, hyper-realistic 3d octane render, unreal engine 5, ray tracing, cinematic lighting, 8k resolution, photorealistic details`);
+                    finalPrompt = encodeURIComponent(`${userPromptText}, hyper-realistic 3d octane render, unreal engine 5, cinematic lighting, 8k resolution`);
                 } else if (selectedArtStyle === 'ghibli') {
-                    finalPrompt = encodeURIComponent(`${userPromptText}, breathtaking Studio Ghibli cinematic scenery, Hayao Miyazaki anime style background, soft watercolor gradients, magical atmosphere, highly detailed, 8k`);
+                    // Modified Ghibli: Realistic detailed face blending seamlessly into a modern magical Studio Ghibli cinematic background
+                    finalPrompt = encodeURIComponent(`Detailed realistic face and human features of: ${userPromptText}, seamlessly blended into a breathtaking modern Studio Ghibli cinematic aesthetic scenery, Hayao Miyazaki painted background, soft lighting, 8k masterpiece`);
                 } else if (selectedArtStyle === 'logo') {
-                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${userPromptText}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
+                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${userPromptText}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, 8k render`);
                 }
 
                 const imgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1024&height=1024&model=flux-realism&seed=${seed}&nologo=true&enhance=true`;
@@ -411,6 +412,7 @@
                         </div>
                     `;
                 }, 1000);
+                clearImage();
                 return;
             }
 
@@ -422,7 +424,7 @@
                     responseText = await callGemini(geminiKey, text);
                     success = true;
                 } catch (err) {
-                    errorMsg = "Gemini: " + err.message;
+                    errorMsg = "Gemini Error: " + err.message;
                 }
             }
 
@@ -433,7 +435,7 @@
                     chatHistory.push({ role: "assistant", content: responseText });
                     success = true;
                 } catch (err) {
-                    errorMsg += " | Groq: " + err.message;
+                    errorMsg += " | Groq Error: " + err.message;
                 }
             }
 
@@ -441,9 +443,9 @@
                 if (currentMode === 'music') {
                     window.lastSong = responseText;
                     aiMsgBox.innerHTML = `
-                        <div>${responseText.replace(/\n/g, '<br>')}</div>
+                        <div>🎵 <b>AI Songwriter Lyrics:</b><br><br>${responseText.replace(/\n/g, '<br>')}</div>
                         <div class="voice-card">
-                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Speak Song</button>
+                            <button class="v-btn" onclick="playSpeech(window.lastSong)">🔊 Recite Song</button>
                             <button class="v-btn v-btn-copy" onclick="copyTxt(window.lastSong)">📋 Copy</button>
                             <button class="v-btn v-btn-stop" onclick="stopAudio()">⏹️ Stop</button>
                         </div>
@@ -453,10 +455,13 @@
                     aiMsgBox.innerText = responseText;
                 }
             } else {
-                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue. Check ⚙️ Settings.");
+                aiMsgBox.innerText = "❌ " + (errorMsg || "API Key issue! Please add your valid API Key in ⚙️ Settings.");
             }
             clearImage();
         }
     </script>
 </body>
 </html>
+
+
+
