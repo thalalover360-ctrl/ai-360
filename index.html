@@ -40,10 +40,8 @@
         .msg-ai { align-self: flex-start; background: #182035; color: #d0f4fc; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #00f2fe; }
 
-        .studio-player { background: linear-gradient(135deg, rgba(0,242,254,0.1), rgba(155,81,224,0.15)); border: 1px solid #00f2fe; border-radius: 12px; padding: 12px; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .studio-btn-row { display: flex; gap: 8px; }
-        .studio-play-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 8px; padding: 10px; font-weight: bold; color: #000; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .studio-stop-btn { flex: 0.4; background: #ff5252; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .copy-box { margin-top: 8px; display: flex; gap: 8px; }
+        .copy-btn { background: #1c243c; border: 1px solid #4facfe; border-radius: 6px; padding: 6px 12px; font-size: 0.75rem; color: #00f2fe; cursor: pointer; }
 
         .img-preview-bar { display: none; align-items: center; gap: 8px; background: #121829; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.75rem; color: #00f2fe; }
         .preview-thumb { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; }
@@ -91,15 +89,15 @@
             <div class="card-icon">⚡</div>
             <div class="card-info">
                 <h3>Study AI + Photo Solver 📸</h3>
-                <p>Step-by-step solutions & derivation tutor</p>
+                <p>Step-by-step derivations & doubt solver</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('music')">
             <div class="card-num">02</div>
             <div class="card-icon">🎵</div>
             <div class="card-info">
-                <h3>AI Songwriter & Lyrics Studio 🎙️</h3>
-                <p>Generate clean Hinglish/Hindi lyrics with Indian Voice recitation</p>
+                <h3>AI Songwriter & Rap Studio ✍️</h3>
+                <p>Top Hinglish/Hindi lyrics, hooks, rhyme schemes & flow</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
@@ -107,7 +105,7 @@
             <div class="card-icon">🎙️</div>
             <div class="card-info">
                 <h3>Text to Voice AI (Indian Accent)</h3>
-                <p>Lifelike dynamic speech with accurate pronunciation</p>
+                <p>Crystal-clear dynamic speech & pronunciation</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('image3d')">
@@ -137,7 +135,7 @@
             </div>
         </div>
         <div class="chat-box" id="chatBox">
-            <div class="chat-msg msg-ai">👋 Welcome to AI 360! Ask your doubts or upload a photo.</div>
+            <div class="chat-msg msg-ai">👋 Welcome to AI 360! Ask your doubts or enter a topic.</div>
         </div>
         <div class="img-preview-bar" id="imgPreviewBar">
             <img id="previewImg" class="preview-thumb">
@@ -153,10 +151,9 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-        <script>
+    <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let cachedGroqModels = null;
-        let bgAudioTrack = new Audio();
         
         const groqEl = document.getElementById('groqKey');
         const geminiEl = document.getElementById('geminiKey');
@@ -182,14 +179,15 @@
 
         const systemPrompts = {
             study: "You are an elite professor and interactive tutor. Provide concise step-by-step mathematical & conceptual solutions, explain formulas clearly, and solve doubts from images accurately.",
-            music: "You are a professional Bollywood & Hip-Hop Songwriter. Write STRICTLY in clear Roman Hinglish or Hindi script. Do NOT use Arabic or Urdu script! Provide ONLY catchy song lyrics divided into [Verse] and [Chorus] without technical jargon or extra tables.",
-            voice: "Text to voice engine with Indian accent pronunciation.",
+            music: "You are an award-winning Bollywood & Hip-Hop Songwriter. Write STRICTLY in clean Roman Hinglish (English alphabet) or Hindi. Write deep, catchy rhyming lyrics with clear [Hook/Chorus], [Verse 1], and [Verse 2] with flow cues.",
+            voice: "Text to voice engine with Indian English / Hindi accent pronunciation.",
             image3d: "Image render generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
         };
 
         function openModule(mode) {
-            currentMode = mode; chatHistory = []; stopMusic();
+            currentMode = mode; chatHistory = [];
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             document.getElementById('grid').style.display = 'none';
             document.getElementById('actionPanel').style.display = 'block';
             document.getElementById('panelTitle').innerText = mode.toUpperCase() + " AI MODE";
@@ -198,7 +196,7 @@
         }
 
         function closeModule() {
-            stopMusic();
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             document.getElementById('actionPanel').style.display = 'none';
             document.getElementById('grid').style.display = 'flex';
         }
@@ -232,62 +230,34 @@
             return msg;
         }
 
-        // --- Optimized Indian Voice Recitation & Background Beat Engine ---
-        function speakWithIndianVoice(rawText, playMusic = false) {
-            stopMusic();
+        // Pure Loud & Clear Indian Accent Text-to-Speech
+        function speakIndianAccent(text) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
 
-            if (playMusic) {
-                bgAudioTrack.src = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3";
-                bgAudioTrack.volume = 0.4;
-                bgAudioTrack.loop = true;
-                bgAudioTrack.play().catch(e => console.log("Audio play allowed"));
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.95;
+            utterance.pitch = 1.0;
+
+            const voices = window.speechSynthesis.getVoices();
+            const indianVoice = voices.find(v => v.lang === 'en-IN' || v.lang === 'hi-IN' || v.name.toLowerCase().includes('india'));
+            if (indianVoice) {
+                utterance.voice = indianVoice;
+                utterance.lang = indianVoice.lang;
+            } else {
+                utterance.lang = 'en-IN';
             }
-
-            // Clean up text to ensure correct phonetic reading
-            const cleanText = rawText
-                .replace(/\|.*\|/g, '')
-                .replace(/[*#_`[\]]/g, '')
-                .replace(/Verse|Chorus|Hook|Bridge|Track Vibe/gi, '')
-                .split('\n')
-                .filter(line => line.trim().length > 2)
-                .join('. ');
-
-            if ('speechSynthesis' in window && cleanText.length > 0) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.rate = 0.95;
-                utterance.pitch = 1.0;
-
-                // Force Indian English / Hindi Voice for accurate pronunciation
-                const voices = window.speechSynthesis.getVoices();
-                const indianVoice = voices.find(v => v.lang === 'en-IN' || v.lang === 'hi-IN' || v.name.toLowerCase().includes('india') || v.name.toLowerCase().includes('hindi'));
-                if (indianVoice) {
-                    utterance.voice = indianVoice;
-                    utterance.lang = indianVoice.lang;
-                } else {
-                    utterance.lang = 'en-IN';
-                }
-
-                utterance.onend = () => { if (playMusic) stopMusic(); };
-                utterance.onerror = () => { if (playMusic) stopMusic(); };
-                window.speechSynthesis.speak(utterance);
-            }
+            window.speechSynthesis.speak(utterance);
         }
 
-        function stopMusic() {
-            if (bgAudioTrack) {
-                bgAudioTrack.pause();
-                bgAudioTrack.currentTime = 0;
-            }
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+        function copyText(txt) {
+            navigator.clipboard.writeText(txt).then(() => alert("📋 Lyrics copied to clipboard!"));
         }
 
         async function callGemini(geminiKey, text) {
             const parts = [];
             if (currentImageBase64) parts.push({ inline_data: { mime_type: "image/jpeg", data: currentImageBase64 } });
-            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Prompt: ${text || 'Generate creative response.'}` });
+            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Prompt: ${text || 'Write creative response.'}` });
             
             const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
             let lastErr = "";
@@ -368,20 +338,20 @@
             inputEl.value = "";
 
             if (currentMode === 'voice') {
-                speakWithIndianVoice(text, false);
-                appendMessage('ai', `🎙️ Reciting with Indian Accent: "${text}"`);
+                speakIndianAccent(text);
+                appendMessage('ai', `🎙️ Speaking: "${text}"`);
                 return;
             }
 
             if (currentMode === 'image3d') {
-                const prompt = encodeURIComponent(text + ", hyper-realistic 3d octane render, cinema 4d, ray tracing 8k");
+                const prompt = encodeURIComponent(text + ", hyper-realistic 3d octane render, cinema 4d, 8k resolution");
                 const imgUrl = `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=1024&model=flux&nologo=true`;
                 const loadingMsg = appendMessage('ai', "🎨 Rendering 3D Model...");
                 setTimeout(() => { loadingMsg.innerHTML = `🎨 Generated 3D Render:<br><img src="${imgUrl}" class="msg-img">`; }, 1000);
                 return;
             }
 
-            const aiMsgBox = appendMessage('ai', "⚡ AI 360 is processing...");
+            const aiMsgBox = appendMessage('ai', "⚡ AI 360 is generating response...");
             let responseText = "", success = false, errorMsg = "";
 
             if (prefEngine === 'gemini' || currentImageBase64) {
@@ -408,15 +378,11 @@
 
             if (success) {
                 if (currentMode === 'music') {
-                    window.lastSongLyrics = responseText;
+                    window.lastSong = responseText;
                     aiMsgBox.innerHTML = `
                         <div>${responseText.replace(/\n/g, '<br>')}</div>
-                        <div class="studio-player">
-                            <span style="font-size:0.75rem; color:#00f2fe; font-weight:600;">🎧 Studio Beat + Indian Recitation:</span>
-                            <div class="studio-btn-row">
-                                <button class="studio-play-btn" onclick="speakWithIndianVoice(window.lastSongLyrics, true)">▶️ Play Beat & Recite</button>
-                                <button class="studio-stop-btn" onclick="stopMusic()">⏹️ Stop</button>
-                            </div>
+                        <div class="copy-box">
+                            <button class="copy-btn" onclick="copyText(window.lastSong)">📋 Copy Lyrics</button>
                         </div>
                     `;
                 } else {
@@ -430,3 +396,5 @@
     </script>
 </body>
 </html>
+
+
