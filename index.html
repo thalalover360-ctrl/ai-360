@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 360 - Neural Ecosystem Hub</title>
+    
+    <!-- PWA Setup Links -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#060812">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -37,7 +49,7 @@
         .msg-ai { align-self: flex-start; background: #131a2d; color: #e2e8f0; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 10px; margin-top: 8px; border: 1px solid #00f2fe; display: block; }
 
-        /* TTS Audio Control Bar */
+        /* TTS Audio Controls */
         .msg-tts-bar { display: flex; gap: 6px; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px; }
         .tts-mini-btn { background: rgba(0,242,254,0.12); border: 1px solid #00f2fe; color: #00f2fe; border-radius: 6px; padding: 4px 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
         .tts-mini-btn:hover { background: #00f2fe; color: #05070e; }
@@ -132,7 +144,7 @@
         let currentMode = "", currentImageBase64 = null;
         let selectedArtStyle = 'ghibli';
 
-        // 🔒 Encrypted Auto-Key (Decodes securely in browser, no leak to bot)
+        // 🔒 Encrypted Auto-Key (Safe Base64 decode)
         function getActiveKey() {
             const encoded = "QVEuQWI4Uk42SWI0bWxMczFXaE9GdU1RSXlqUFBrRU84N1VDN21qOS0wNVJiYU1YNVJRanc=";
             try {
@@ -219,7 +231,7 @@
             return msg;
         }
 
-        // 🎙️ Deep Male Vocal Synthesizer Engine
+        // 🎙️ Deep Male Vocal Synthesizer Engine (Strict Clean Recitation)
         function playSpeech(txt) {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
@@ -427,3 +439,4 @@
     </script>
 </body>
 </html>
+
