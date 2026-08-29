@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 360 - Neural Hub</title>
+    <title>AI 360 - Neural Ecosystem Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -18,16 +18,15 @@
         .dev-modal-box { background: #0e121e; border: 1px solid #4facfe; border-radius: 14px; padding: 18px; width: 100%; max-width: 400px; }
         .dev-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: 'Orbitron', sans-serif; color: #00f2fe; font-size: 0.9rem; }
         .dev-input { width: 100%; background: #080a12; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 8px 10px; color: #00f2fe; font-size: 0.75rem; margin-top: 4px; margin-bottom: 10px; outline: none; }
-        .dev-select { width: 100%; background: #080a12; border: 1px solid #4facfe; border-radius: 6px; padding: 8px 10px; color: #fff; font-size: 0.75rem; margin-bottom: 12px; outline: none; }
         .save-btn { background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px 14px; font-weight: bold; cursor: pointer; width: 100%; color: #000; font-size: 0.8rem; }
 
-        .features-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 500px; z-index: 1; margin-bottom: 20px; }
-        .feature-card { background: rgba(18,22,36,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .features-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px; z-index: 1; margin-bottom: 20px; }
+        .feature-card { background: rgba(18,22,36,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .feature-card:active { transform: scale(0.98); border-color: #00f2fe; }
-        .card-num { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 700; color: #00f2fe; background: rgba(0,242,254,0.1); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .card-icon { font-size: 1.4rem; }
-        .card-info h3 { font-size: 0.9rem; font-weight: 600; }
-        .card-info p { font-size: 0.72rem; color: #7b8895; }
+        .card-num { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: 700; color: #00f2fe; background: rgba(0,242,254,0.1); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .card-icon { font-size: 1.3rem; }
+        .card-info h3 { font-size: 0.85rem; font-weight: 600; }
+        .card-info p { font-size: 0.68rem; color: #7b8895; }
 
         .action-panel { width: 100%; max-width: 500px; background: rgba(14,18,30,0.98); border: 1px solid #4facfe; border-radius: 16px; padding: 15px; box-shadow: 0 0 25px rgba(79,172,254,0.2); z-index: 2; display: none; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
@@ -60,7 +59,7 @@
     <header>
         <div class="dev-gear" onclick="toggleModal()" title="AI Core Settings">⚙️ Settings</div>
         <h1 class="brand-title">AI 360</h1>
-        <p class="tagline">Neural Ecosystem</p>
+        <p class="tagline">Neural Ecosystem Hub</p>
     </header>
 
     <div class="dev-modal" id="devModal">
@@ -85,7 +84,7 @@
             <div class="card-icon">⚡</div>
             <div class="card-info">
                 <h3>Study AI + Photo Solver 📸</h3>
-                <p>Instant step-by-step solutions & derivations</p>
+                <p>Step-by-step solutions & derivations</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('music')">
@@ -93,7 +92,7 @@
             <div class="card-icon">🎵</div>
             <div class="card-info">
                 <h3>AI Songwriter & Voice Reciter 🎙️</h3>
-                <p>Punchy Bollywood/Rap lyrics with tap-to-speak voice</p>
+                <p>Catchy Bollywood/Rap lyrics with audio</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('voice')">
@@ -109,11 +108,27 @@
             <div class="card-icon">🎨</div>
             <div class="card-info">
                 <h3>3D Image Generator AI</h3>
-                <p>Hyper-realistic HD Flux renders & avatars</p>
+                <p>Hyper-realistic HD Flux 3D renders</p>
+            </div>
+        </div>
+        <div class="feature-card" onclick="openModule('ghibli')">
+            <div class="card-num">05</div>
+            <div class="card-icon">🌸</div>
+            <div class="card-info">
+                <h3>Studio Ghibli Art Converter 🎨</h3>
+                <p>Convert photos into magical anime art</p>
+            </div>
+        </div>
+        <div class="feature-card" onclick="openModule('logo3d')">
+            <div class="card-num">06</div>
+            <div class="card-icon">🔮</div>
+            <div class="card-info">
+                <h3>3D Animated Logo Maker 💡</h3>
+                <p>Generate futuristic sci-fi/gaming logos</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
-            <div class="card-num">05</div>
+            <div class="card-num">07</div>
             <div class="card-icon">🎮</div>
             <div class="card-info">
                 <h3>Gaming Pro Mentor AI</h3>
@@ -139,7 +154,7 @@
             <span class="remove-img" onclick="clearImage()">✕ Remove</span>
         </div>
         <div class="input-row">
-            <label class="upload-label" for="imgUpload" title="Attach Question Image">
+            <label class="upload-label" for="imgUpload" title="Attach Question/Photo">
                 📷
                 <input type="file" id="imgUpload" accept="image/*" style="display:none;" onchange="handleImage(event)">
             </label>
@@ -147,7 +162,7 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-        <script>
+    <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
 
         const groqEl = document.getElementById('groqKey');
@@ -165,7 +180,7 @@
             localStorage.setItem('ai360_groq', groqEl.value.trim());
             localStorage.setItem('ai360_gemini', geminiEl.value.trim());
             toggleModal();
-            alert("✅ Settings saved!");
+            alert("✅ Settings saved successfully!");
         }
 
         const systemPrompts = {
@@ -173,6 +188,8 @@
             music: "You are an Indian Rap/Pop Songwriter. Write ONLY 4-6 catchy rhyming punchlines in Roman Hinglish. Do NOT write disclaimers or markdown symbols.",
             voice: "Text to voice engine.",
             image3d: "Image render generator.",
+            ghibli: "Ghibli Art generation mode.",
+            logo3d: "3D Logo generation mode.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
         };
 
@@ -209,7 +226,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
                     currentImageBase64 = compressedDataUrl.split(',')[1];
                     document.getElementById('previewImg').src = compressedDataUrl;
                     document.getElementById('imgPreviewBar').style.display = 'flex';
@@ -273,7 +290,6 @@
             navigator.clipboard.writeText(t).then(() => alert("📋 Copied!"));
         }
 
-        // Direct call to Gemini 3.5 Flash Lite
         async function callGemini(geminiKey, text) {
             const parts = [];
             if (currentImageBase64) {
@@ -284,9 +300,9 @@
                     }
                 });
             }
-            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question: ${text || 'Solve step-by-step.'}` });
+            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}` });
 
-            const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash"];
+            const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-2.0-flash"];
             let lastErr = "";
 
             for (let m of targetModels) {
@@ -305,7 +321,7 @@
                     lastErr = e.message;
                 }
             }
-            throw new Error(lastErr || "Gemini endpoint error");
+            throw new Error(lastErr || "Gemini API Error");
         }
 
         async function callGroqText(groqKey, text) {
@@ -345,7 +361,7 @@
             if (!text && !currentImageBase64) return;
 
             let userDisplay = text;
-            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Solve attached question.");
+            if (currentImageBase64) userDisplay = `📷 [Photo Attached]\n` + (text || "Process attached media.");
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
@@ -362,11 +378,60 @@
                 return;
             }
 
+            // --- 3D Image Generator ---
             if (currentMode === 'image3d') {
-                const prompt = encodeURIComponent(text + ", hyper-realistic 3d octane render, cinema 4d, 8k resolution");
-                const imgUrl = `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=1024&model=flux&nologo=true`;
-                const loadingMsg = appendMessage('ai', "🎨 Rendering 3D Model...");
-                setTimeout(() => { loadingMsg.innerHTML = `🎨 Generated 3D Render:<br><img src="${imgUrl}" class="msg-img">`; }, 1000);
+                const seed = Math.floor(Math.random() * 9999999);
+                const enhancedPrompt = encodeURIComponent(`${text}, masterpiece, 3d hyper-realistic octane render, unreal engine 5, ray tracing, cinematic lighting, 8k resolution`);
+                const imgUrl = `https://image.pollinations.ai/prompt/${enhancedPrompt}?width=1024&height=1024&model=flux-realism&seed=${seed}&nologo=true&enhance=true`;
+                
+                const loadingMsg = appendMessage('ai', "🎨 Rendering Ultra-HD 3D Model...");
+                setTimeout(() => {
+                    loadingMsg.innerHTML = `
+                        <div>🎨 <b>Generated 3D Render:</b></div>
+                        <img src="${imgUrl}" class="msg-img">
+                        <div style="margin-top:6px;">
+                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full HD Image</a>
+                        </div>
+                    `;
+                }, 1200);
+                return;
+            }
+
+            // --- Studio Ghibli Art Converter ---
+            if (currentMode === 'ghibli') {
+                const seed = Math.floor(Math.random() * 9999999);
+                const ghibliPrompt = encodeURIComponent(`${text || 'anime portrait'}, Studio Ghibli anime style, hand-drawn background, beautiful soft pastel watercolor aesthetic, Hayao Miyazaki masterpiece, highly detailed animation cell`);
+                const imgUrl = `https://image.pollinations.ai/prompt/${ghibliPrompt}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
+
+                const loadingMsg = appendMessage('ai', "🌸 Painting Studio Ghibli Masterpiece...");
+                setTimeout(() => {
+                    loadingMsg.innerHTML = `
+                        <div>🌸 <b>Ghibli Art Converted:</b></div>
+                        <img src="${imgUrl}" class="msg-img">
+                        <div style="margin-top:6px;">
+                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full Ghibli Art</a>
+                        </div>
+                    `;
+                }, 1500);
+                return;
+            }
+
+            // --- 3D Animated Logo Maker ---
+            if (currentMode === 'logo3d') {
+                const seed = Math.floor(Math.random() * 9999999);
+                const logoPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${text}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
+                const imgUrl = `https://image.pollinations.ai/prompt/${logoPrompt}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
+
+                const loadingMsg = appendMessage('ai', "🔮 Crafting 3D Logo...");
+                setTimeout(() => {
+                    loadingMsg.innerHTML = `
+                        <div>🔮 <b>3D Animated Logo:</b></div>
+                        <img src="${imgUrl}" class="msg-img">
+                        <div style="margin-top:6px;">
+                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full Logo</a>
+                        </div>
+                    `;
+                }, 1200);
                 return;
             }
 
@@ -416,4 +481,6 @@
     </script>
 </body>
 </html>
+
+
 
