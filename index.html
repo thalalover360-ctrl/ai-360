@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 360 - The Ultimate AI Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: #070913; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 15px; }
@@ -28,7 +28,6 @@
         .card-info h3 { font-size: 0.9rem; font-weight: 600; }
         .card-info p { font-size: 0.72rem; color: #7b8895; }
 
-        /* Full Chat Interface for Study & Interactive Modes */
         .action-panel { width: 100%; max-width: 500px; background: rgba(14,18,30,0.98); border: 1px solid #4facfe; border-radius: 16px; padding: 15px; box-shadow: 0 0 25px rgba(79,172,254,0.2); z-index: 2; display: none; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
         .panel-title { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #00f2fe; }
@@ -74,19 +73,18 @@
             <input type="password" id="geminiKey" class="api-input" placeholder="Paste AIzaSy... key">
         </div>
         <select id="engineSelector" class="model-select">
-            <option value="gemini">Google Gemini 1.5 Flash (Supports Photo Doubt Solver)</option>
-            <option value="groq">Groq Engine: Llama 3.1 8B (Superfast Text Only)</option>
+            <option value="gemini">Google Gemini 1.5 Flash (Recommended for Photos & Deep AI)</option>
+            <option value="groq">Groq Engine: Llama 3.1 8B (Superfast Text Instant)</option>
         </select>
     </div>
 
-    <!-- Features -->
     <div class="features-grid" id="grid">
         <div class="feature-card" onclick="openModule('study')">
             <div class="card-num">01</div>
             <div class="card-icon">⚡</div>
             <div class="card-info">
                 <h3>Study AI + Photo Solver 📸</h3>
-                <p>Interactive chat, JEE/Boards doubts & step derivations</p>
+                <p>Interactive chat, step derivations & photo doubts</p>
             </div>
         </div>
 
@@ -127,7 +125,6 @@
         </div>
     </div>
 
-    <!-- Active Chat & Interactive Panel -->
     <div class="action-panel" id="actionPanel">
         <div class="panel-header">
             <h2 class="panel-title" id="panelTitle">Module Chat</h2>
@@ -135,7 +132,7 @@
         </div>
 
         <div class="chat-box" id="chatBox">
-            <div class="chat-msg msg-ai">👋 Welcome to AI 360! Ask any question or upload a photo of your problem to get started.</div>
+            <div class="chat-msg msg-ai">👋 Welcome to AI 360! Ask any question or upload a photo to get started.</div>
         </div>
 
         <div class="img-preview-bar" id="imgPreviewBar">
@@ -172,11 +169,11 @@
         engineEl.addEventListener('change', (e) => localStorage.setItem('ai360_pref_engine', e.target.value));
 
         const systemPrompts = {
-            study: "You are an elite IIT/JEE professor and conversational tutor. Give concise, step-by-step mathematical/scientific derivations, solve questions in images with complete clarity, and answer like a helpful teacher.",
-            music: "You are a professional music producer. Provide full track details: Scale/Key, BPM, Chord Progression, Beat structure, and complete lyrics with verse & chorus.",
+            study: "You are an elite IIT/JEE professor and interactive tutor. Provide step-by-step mathematical and scientific solutions, clearly explain formulas, and solve questions from photos with absolute precision.",
+            music: "You are a world-class music director. Provide complete song structure: Scale/Key, BPM, Chord Progression, Beat timing, and full lyrics with Chorus and Hook.",
             voice: "Text to voice engine mode.",
             image3d: "Image generation mode.",
-            gaming: "You are a top esports coach. Give clutch tactical routines, sensitivity setups, and smart positioning tips."
+            gaming: "You are an esports coach. Give pro clutch tactics, weapon loadouts, sensitivity setups, and position guides."
         };
 
         function openModule(mode) {
@@ -185,7 +182,7 @@
             document.getElementById('grid').style.display = 'none';
             document.getElementById('actionPanel').style.display = 'block';
             document.getElementById('panelTitle').innerText = mode.toUpperCase() + " AI MODE";
-            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">Activated <b>${mode.toUpperCase()}</b> Mode. Type below or upload a photo!</div>`;
+            document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">Activated <b>${mode.toUpperCase()}</b> Mode. Type a message or attach a photo!</div>`;
             clearImage();
         }
 
@@ -212,12 +209,12 @@
             document.getElementById('imgPreviewBar').style.display = 'none';
         }
 
-        function appendMessage(sender, text, isImage = false) {
+        function appendMessage(sender, text, isHtml = false) {
             const chatBox = document.getElementById('chatBox');
             const msg = document.createElement('div');
             msg.className = `chat-msg ${sender === 'user' ? 'msg-user' : 'msg-ai'}`;
-            if (isImage) {
-                msg.innerHTML = `<img src="${text}" class="msg-img">`;
+            if (isHtml) {
+                msg.innerHTML = text;
             } else {
                 msg.innerText = text;
             }
@@ -237,23 +234,25 @@
 
             let userDisplay = text;
             if (currentImageBase64) {
-                userDisplay = `📷 [Photo Attached]\n` + (text || "Solve this doubt step-by-step");
+                userDisplay = `📷 [Photo Attached]\n` + (text || "Solve the problem shown in this image step-by-step.");
             }
             appendMessage('user', userDisplay);
             inputEl.value = "";
 
-            // Voice Mode
+            // 1. Text to Voice Engine
             if (currentMode === 'voice') {
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
                     const utterance = new SpeechSynthesisUtterance(text);
                     window.speechSynthesis.speak(utterance);
                     appendMessage('ai', `🎙️ Speaking: "${text}"`);
+                } else {
+                    appendMessage('ai', "❌ Voice engine not supported on this browser.");
                 }
                 return;
             }
 
-            // 3D Image Mode
+            // 2. 3D Image Generator Engine
             if (currentMode === 'image3d') {
                 const prompt = encodeURIComponent(text + ", hyper-realistic 3d octane render, cinema 4d, ray tracing 8k");
                 const imgUrl = `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=1024&model=flux&nologo=true`;
@@ -266,42 +265,44 @@
 
             const aiMsgBox = appendMessage('ai', "⚡ AI 360 is thinking...");
 
-            // Gemini API Call (Supports Image/Photo Doubts)
+            // 3. Gemini Engine (Multimodal Text + Image)
             if ((prefEngine === 'gemini' && geminiKey) || currentImageBase64 || (!groqKey && geminiKey)) {
                 if (!geminiKey) {
-                    aiMsgBox.innerText = "❌ Please paste your Google Gemini API key above to solve photo doubts.";
+                    aiMsgBox.innerText = "❌ Please paste your Google Gemini API key above.";
                     return;
                 }
                 try {
-                    const parts = [{ text: `${systemPrompts[currentMode]}\n\nUser Question: ${text || 'Explain and solve the question in the image.'}` }];
+                    const parts = [];
                     if (currentImageBase64) {
                         parts.push({
-                            inlineData: {
-                                mimeType: "image/jpeg",
+                            inline_data: {
+                                mime_type: "image/jpeg",
                                 data: currentImageBase64
                             }
                         });
                     }
+                    parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question: ${text || 'Solve the question shown in the attached image.'}` });
 
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiKey}`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ contents: [{ parts }] })
                     });
+                    
                     const data = await response.json();
-                    if (data.candidates && data.candidates[0]) {
+                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
                         aiMsgBox.innerText = data.candidates[0].content.parts[0].text;
                     } else {
-                        aiMsgBox.innerText = "❌ Gemini Error: " + (data.error?.message || "Check Key");
+                        aiMsgBox.innerText = "❌ Gemini Error: " + (data.error?.message || "Invalid Key or Format");
                     }
                 } catch (err) {
-                    aiMsgBox.innerText = "❌ Request Failed: " + err.message;
+                    aiMsgBox.innerText = "❌ Gemini Request Failed: " + err.message;
                 }
                 clearImage();
                 return;
             }
 
-            // Groq API Call (Llama 3.1 8B Instant)
+            // 4. Groq Engine (Ultra Fast Llama 3.1 8B)
             if (groqKey) {
                 try {
                     chatHistory.push({ role: "user", content: text });
@@ -320,7 +321,7 @@
                         })
                     });
                     const data = await response.json();
-                    if (data.choices && data.choices[0]) {
+                    if (data.choices && data.choices[0]?.message?.content) {
                         const reply = data.choices[0].message.content;
                         aiMsgBox.innerText = reply;
                         chatHistory.push({ role: "assistant", content: reply });
@@ -328,7 +329,7 @@
                         aiMsgBox.innerText = "❌ Groq Error: " + (data.error?.message || "Check Key");
                     }
                 } catch (err) {
-                    aiMsgBox.innerText = "❌ Request Failed: " + err.message;
+                    aiMsgBox.innerText = "❌ Groq Request Failed: " + err.message;
                 }
             } else {
                 aiMsgBox.innerText = "⚠️ Please paste either Groq Key or Gemini Key above.";
