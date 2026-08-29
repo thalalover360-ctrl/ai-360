@@ -33,15 +33,15 @@
         .panel-title { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #00f2fe; }
         .close-btn { background: none; border: none; color: #8f9ca7; font-size: 1.2rem; cursor: pointer; }
         
+        .style-selector { display: none; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+        .style-btn { background: #1c243c; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; color: #fff; cursor: pointer; }
+        .style-btn.active { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #000; font-weight: bold; border-color: #00f2fe; }
+
         .chat-box { width: 100%; height: 320px; background: #090c15; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
         .chat-msg { max-width: 90%; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
         .msg-user { align-self: flex-end; background: linear-gradient(135deg, #0052d4, #4364f7); color: #fff; border-bottom-right-radius: 2px; }
         .msg-ai { align-self: flex-start; background: #182035; color: #d0f4fc; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #00f2fe; }
-
-        .style-selector { display: none; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
-        .style-btn { background: #1c243c; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; color: #fff; cursor: pointer; }
-        .style-btn.active { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #000; font-weight: bold; border-color: #00f2fe; }
 
         .voice-card { background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px; margin-top: 6px; display: flex; gap: 8px; }
         .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px; font-size: 0.78rem; font-weight: bold; color: #000; cursor: pointer; }
@@ -112,7 +112,7 @@
             <div class="card-icon">🎨</div>
             <div class="card-info">
                 <h3>AI Image & Art Studio 🖼️</h3>
-                <p>Ultra-HD 3D, Ghibli Photo Filter & Logo Maker</p>
+                <p>Ultra-HD 3D, Ghibli & 3D Logo Maker</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
@@ -155,7 +155,7 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-    <script>
+        <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
         let selectedArtStyle = 'realism';
 
@@ -232,7 +232,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
                     currentImageBase64 = compressedDataUrl.split(',')[1];
                     document.getElementById('previewImg').src = compressedDataUrl;
                     document.getElementById('imgPreviewBar').style.display = 'flex';
@@ -384,45 +384,27 @@
                 return;
             }
 
-            // --- Unified AI Image & Art Studio ---
+            // --- AI Image & Art Studio (Direct & Sharp Rendering) ---
             if (currentMode === 'imagestudio') {
-                const loadingMsg = appendMessage('ai', "✨ Processing Masterpiece Render (Ultra-HD Flux Engine)...");
+                const loadingMsg = appendMessage('ai', "✨ Rendering Ultra-HD Masterpiece...");
                 
-                let imageDescription = text || "A high quality artistic composition";
-                if (geminiKey && currentImageBase64) {
-                    try {
-                        const parts = [
-                            { inline_data: { mime_type: "image/jpeg", data: currentImageBase64 } },
-                            { text: "Describe the exact subject, human pose, clothes, expression, and environment in this photo in detail, in short English text." }
-                        ];
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${geminiKey}`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ contents: [{ parts }] })
-                        });
-                        const data = await res.json();
-                        if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                            imageDescription = data.candidates[0].content.parts[0].text;
-                        }
-                    } catch (e) {}
-                }
-
                 const seed = Math.floor(Math.random() * 9999999);
                 let finalPrompt = "";
+                let userPromptText = text || "Artistic high quality composition";
 
                 if (selectedArtStyle === 'realism') {
-                    finalPrompt = encodeURIComponent(`Photorealistic portrait of: ${imageDescription}, hyper-realistic skin texture, natural lighting, cinematic octane render, 8k resolution, masterpiece`);
+                    finalPrompt = encodeURIComponent(`${userPromptText}, hyper-realistic 3d octane render, unreal engine 5, ray tracing, cinematic lighting, 8k resolution, photorealistic details`);
                 } else if (selectedArtStyle === 'ghibli') {
-                    finalPrompt = encodeURIComponent(`Photorealistic face and realistic human features of: ${imageDescription}, set inside a breathtaking Studio Ghibli cinematic painted scenery, Hayao Miyazaki aesthetic background, soft watercolor gradients, magical atmosphere, 8k`);
+                    finalPrompt = encodeURIComponent(`${userPromptText}, breathtaking Studio Ghibli cinematic scenery, Hayao Miyazaki anime style background, soft watercolor gradients, magical atmosphere, highly detailed, 8k`);
                 } else if (selectedArtStyle === 'logo') {
-                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${text || imageDescription}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
+                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${userPromptText}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
                 }
 
                 const imgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1024&height=1024&model=flux-realism&seed=${seed}&nologo=true&enhance=true`;
 
                 setTimeout(() => {
                     loadingMsg.innerHTML = `
-                        <div>🎨 <b>Generated Studio Masterpiece:</b></div>
+                        <div>🎨 <b>Generated Masterpiece:</b></div>
                         <img src="${imgUrl}" class="msg-img">
                         <div style="margin-top:6px;">
                             <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full HD Image</a>
@@ -478,5 +460,3 @@
     </script>
 </body>
 </html>
-
-
