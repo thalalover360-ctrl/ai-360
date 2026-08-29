@@ -39,6 +39,10 @@
         .msg-ai { align-self: flex-start; background: #182035; color: #d0f4fc; border: 1px solid rgba(0,242,254,0.2); border-bottom-left-radius: 2px; }
         .msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #00f2fe; }
 
+        .style-selector { display: none; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+        .style-btn { background: #1c243c; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 5px 10px; font-size: 0.7rem; color: #fff; cursor: pointer; }
+        .style-btn.active { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #000; font-weight: bold; border-color: #00f2fe; }
+
         .voice-card { background: rgba(0,242,254,0.1); border: 1px solid #00f2fe; border-radius: 10px; padding: 8px; margin-top: 6px; display: flex; gap: 8px; }
         .v-btn { flex: 1; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; border-radius: 6px; padding: 8px; font-size: 0.78rem; font-weight: bold; color: #000; cursor: pointer; }
         .v-btn-copy { background: #1c243c; color: #00f2fe; border: 1px solid #4facfe; }
@@ -103,32 +107,16 @@
                 <p>Instant audio speech playback</p>
             </div>
         </div>
-        <div class="feature-card" onclick="openModule('image3d')">
+        <div class="feature-card" onclick="openModule('imagestudio')">
             <div class="card-num">04</div>
             <div class="card-icon">🎨</div>
             <div class="card-info">
-                <h3>3D Image Generator AI</h3>
-                <p>Hyper-realistic HD Flux 3D renders</p>
-            </div>
-        </div>
-        <div class="feature-card" onclick="openModule('ghibli')">
-            <div class="card-num">05</div>
-            <div class="card-icon">🌸</div>
-            <div class="card-info">
-                <h3>Studio Ghibli Art Converter 🎨</h3>
-                <p>Convert photos into magical modern anime art</p>
-            </div>
-        </div>
-        <div class="feature-card" onclick="openModule('logo3d')">
-            <div class="card-num">06</div>
-            <div class="card-icon">🔮</div>
-            <div class="card-info">
-                <h3>3D Animated Logo Maker 💡</h3>
-                <p>Generate futuristic sci-fi/gaming logos</p>
+                <h3>AI Image & Art Studio 🖼️</h3>
+                <p>Ultra-HD 3D, Ghibli Photo Filter & Logo Maker</p>
             </div>
         </div>
         <div class="feature-card" onclick="openModule('gaming')">
-            <div class="card-num">07</div>
+            <div class="card-num">05</div>
             <div class="card-icon">🎮</div>
             <div class="card-info">
                 <h3>Gaming Pro Mentor AI</h3>
@@ -145,6 +133,11 @@
                 <button class="close-btn" onclick="closeModule()">✕</button>
             </div>
         </div>
+        <div class="style-selector" id="styleSelector">
+            <button class="style-btn active" onclick="setArtStyle('realism')">🌟 Ultra 3D Realism</button>
+            <button class="style-btn" onclick="setArtStyle('ghibli')">🌸 Ghibli Cinematic</button>
+            <button class="style-btn" onclick="setArtStyle('logo')">🔮 3D Sci-Fi Logo</button>
+        </div>
         <div class="chat-box" id="chatBox">
             <div class="chat-msg msg-ai">👋 Welcome to AI 360! Ask your doubts or upload a photo.</div>
         </div>
@@ -154,7 +147,7 @@
             <span class="remove-img" onclick="clearImage()">✕ Remove</span>
         </div>
         <div class="input-row">
-            <label class="upload-label" for="imgUpload" title="Attach Question/Photo">
+            <label class="upload-label" for="imgUpload" title="Attach Photo">
                 📷
                 <input type="file" id="imgUpload" accept="image/*" style="display:none;" onchange="handleImage(event)">
             </label>
@@ -162,8 +155,9 @@
             <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
-        <script>
+    <script>
         let currentMode = "", currentImageBase64 = null, chatHistory = [];
+        let selectedArtStyle = 'realism';
 
         const groqEl = document.getElementById('groqKey');
         const geminiEl = document.getElementById('geminiKey');
@@ -187,9 +181,7 @@
             study: "You are an expert professor. Solve math, physics, chemistry questions step-by-step with clear derivations and highlight final answers.",
             music: "You are an Indian Rap/Pop Songwriter. Write ONLY 4-6 catchy rhyming punchlines in Roman Hinglish. Do NOT write disclaimers or markdown symbols.",
             voice: "Text to voice engine.",
-            image3d: "Image render generator.",
-            ghibli: "Ghibli Art generation mode.",
-            logo3d: "3D Logo generation mode.",
+            imagestudio: "AI Image and Art Studio generator.",
             gaming: "You are an esports coach. Give pro clutch tactics, weapon attachments, sensitivity, and positioning tips."
         };
 
@@ -199,6 +191,14 @@
             document.getElementById('grid').style.display = 'none';
             document.getElementById('actionPanel').style.display = 'block';
             document.getElementById('panelTitle').innerText = mode.toUpperCase() + " AI MODE";
+            
+            const styleSelector = document.getElementById('styleSelector');
+            if (mode === 'imagestudio') {
+                styleSelector.style.display = 'flex';
+            } else {
+                styleSelector.style.display = 'none';
+            }
+
             document.getElementById('chatBox').innerHTML = `<div class="chat-msg msg-ai">Activated <b>${mode.toUpperCase()}</b> Mode. Type below or upload a photo!</div>`;
             clearImage();
         }
@@ -207,6 +207,12 @@
             stopAudio();
             document.getElementById('actionPanel').style.display = 'none';
             document.getElementById('grid').style.display = 'flex';
+        }
+
+        function setArtStyle(style) {
+            selectedArtStyle = style;
+            document.querySelectorAll('.style-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
         }
 
         function handleImage(e) {
@@ -226,7 +232,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
                     currentImageBase64 = compressedDataUrl.split(',')[1];
                     document.getElementById('previewImg').src = compressedDataUrl;
                     document.getElementById('imgPreviewBar').style.display = 'flex';
@@ -300,9 +306,7 @@
                     }
                 });
             }
-            
-            let promptText = `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}`;
-            parts.push({ text: promptText });
+            parts.push({ text: `${systemPrompts[currentMode]}\n\nUser Question/Prompt: ${text || 'Analyze and solve step-by-step.'}` });
 
             const targetModels = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-2.0-flash"];
             let lastErr = "";
@@ -380,35 +384,16 @@
                 return;
             }
 
-            // --- 3D Image Generator ---
-            if (currentMode === 'image3d') {
-                const seed = Math.floor(Math.random() * 9999999);
-                const enhancedPrompt = encodeURIComponent(`${text}, masterpiece, 3d hyper-realistic octane render, unreal engine 5, ray tracing, cinematic lighting, 8k resolution`);
-                const imgUrl = `https://image.pollinations.ai/prompt/${enhancedPrompt}?width=1024&height=1024&model=flux-realism&seed=${seed}&nologo=true&enhance=true`;
+            // --- Unified AI Image & Art Studio ---
+            if (currentMode === 'imagestudio') {
+                const loadingMsg = appendMessage('ai', "✨ Processing Masterpiece Render (Ultra-HD Flux Engine)...");
                 
-                const loadingMsg = appendMessage('ai', "🎨 Rendering Ultra-HD 3D Model...");
-                setTimeout(() => {
-                    loadingMsg.innerHTML = `
-                        <div>🎨 <b>Generated 3D Render:</b></div>
-                        <img src="${imgUrl}" class="msg-img">
-                        <div style="margin-top:6px;">
-                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full HD Image</a>
-                        </div>
-                    `;
-                }, 1200);
-                return;
-            }
-
-            // --- Studio Ghibli Art Converter (Modern Clean Digital Anime Style) ---
-            if (currentMode === 'ghibli') {
-                const loadingMsg = appendMessage('ai', "🌸 Analyzing photo & painting modern Ghibli art...");
-                
-                let imageDescription = text || "A person portrait";
+                let imageDescription = text || "A high quality artistic composition";
                 if (geminiKey && currentImageBase64) {
                     try {
                         const parts = [
                             { inline_data: { mime_type: "image/jpeg", data: currentImageBase64 } },
-                            { text: "Describe the person, clothes, pose, and setting in this photo in detail, in short English text." }
+                            { text: "Describe the exact subject, human pose, clothes, expression, and environment in this photo in detail, in short English text." }
                         ];
                         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${geminiKey}`, {
                             method: "POST",
@@ -423,37 +408,27 @@
                 }
 
                 const seed = Math.floor(Math.random() * 9999999);
-                const ghibliPrompt = encodeURIComponent(`Modern Studio Ghibli 3D anime style portrait of: ${imageDescription}, vibrant clean digital art, Makoto Shinkai and modern anime aesthetic, smooth smooth shading, high quality digital render, beautiful lighting`);
-                const imgUrl = `https://image.pollinations.ai/prompt/${ghibliPrompt}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
+                let finalPrompt = "";
+
+                if (selectedArtStyle === 'realism') {
+                    finalPrompt = encodeURIComponent(`Photorealistic portrait of: ${imageDescription}, hyper-realistic skin texture, natural lighting, cinematic octane render, 8k resolution, masterpiece`);
+                } else if (selectedArtStyle === 'ghibli') {
+                    finalPrompt = encodeURIComponent(`Photorealistic face and realistic human features of: ${imageDescription}, set inside a breathtaking Studio Ghibli cinematic painted scenery, Hayao Miyazaki aesthetic background, soft watercolor gradients, magical atmosphere, 8k`);
+                } else if (selectedArtStyle === 'logo') {
+                    finalPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${text || imageDescription}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
+                }
+
+                const imgUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1024&height=1024&model=flux-realism&seed=${seed}&nologo=true&enhance=true`;
 
                 setTimeout(() => {
                     loadingMsg.innerHTML = `
-                        <div>🌸 <b>Modern Ghibli Art Converted from your Photo:</b></div>
+                        <div>🎨 <b>Generated Studio Masterpiece:</b></div>
                         <img src="${imgUrl}" class="msg-img">
                         <div style="margin-top:6px;">
-                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full Ghibli Art</a>
+                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full HD Image</a>
                         </div>
                     `;
                 }, 1000);
-                return;
-            }
-
-            // --- 3D Animated Logo Maker ---
-            if (currentMode === 'logo3d') {
-                const seed = Math.floor(Math.random() * 9999999);
-                const logoPrompt = encodeURIComponent(`3D futuristic sci-fi gaming logo for text "${text}", glossy metallic glowing neon lighting, centered typography, isolated on dark background, vector art, 8k render`);
-                const imgUrl = `https://image.pollinations.ai/prompt/${logoPrompt}?width=1024&height=1024&model=flux&seed=${seed}&nologo=true`;
-
-                const loadingMsg = appendMessage('ai', "🔮 Crafting 3D Logo...");
-                setTimeout(() => {
-                    loadingMsg.innerHTML = `
-                        <div>🔮 <b>3D Animated Logo:</b></div>
-                        <img src="${imgUrl}" class="msg-img">
-                        <div style="margin-top:6px;">
-                            <a href="${imgUrl}" target="_blank" style="display:inline-block; padding:5px 12px; background:#1c243c; color:#00f2fe; border:1px solid #4facfe; border-radius:6px; font-size:0.75rem; text-decoration:none;">🔍 Open Full Logo</a>
-                        </div>
-                    `;
-                }, 1200);
                 return;
             }
 
@@ -503,3 +478,5 @@
     </script>
 </body>
 </html>
+
+
